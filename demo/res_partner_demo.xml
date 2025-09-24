@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="demo_artist_partner" model="res.partner">
+        <field name="name">Aurora Stone</field>
+        <field name="email">aurora@example.com</field>
+        <field name="is_company" eval="False"/>
+        <field name="is_artist" eval="True"/>
+        <field name="stage_name">Aurora Stone</field>
+    </record>
+
+    <record id="demo_writer_partner" model="res.partner">
+        <field name="name">Miles Carter</field>
+        <field name="email">miles@example.com</field>
+        <field name="is_company" eval="False"/>
+        <field name="is_writer" eval="True"/>
+        <field name="stage_name">Miles Carter</field>
+    </record>
+
+    <record id="demo_client_partner" model="res.partner">
+        <field name="name">Sunset Studios LLC</field>
+        <field name="email">bookings@sunsetstudios.com</field>
+        <field name="is_company" eval="True"/>
+        <field name="is_studio_client" eval="True"/>
+    </record>
+</odoo>

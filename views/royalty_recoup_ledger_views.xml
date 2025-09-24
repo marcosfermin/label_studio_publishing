@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_royalty_recoup_ledger_tree" model="ir.ui.view">
+        <field name="name">royalty.recoup.ledger.tree</field>
+        <field name="model">royalty.recoup.ledger</field>
+        <field name="arch" type="xml">
+            <tree string="Recoupment Ledger" default_order="date desc">
+                <field name="date"/>
+                <field name="deal_id"/>
+                <field name="party_id"/>
+                <field name="bucket"/>
+                <field name="description"/>
+                <field name="debit_amount"/>
+                <field name="credit_amount"/>
+                <field name="balance"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_royalty_recoup_ledger_form" model="ir.ui.view">
+        <field name="name">royalty.recoup.ledger.form</field>
+        <field name="model">royalty.recoup.ledger</field>
+        <field name="arch" type="xml">
+            <form string="Recoupment Entry">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="deal_id"/>
+                            <field name="party_id"/>
+                            <field name="bucket"/>
+                        </group>
+                        <group>
+                            <field name="debit_amount"/>
+                            <field name="credit_amount"/>
+                            <field name="balance" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                        <field name="notes" widget="text"/>
+                    </group>
+                    <group string="Source Documents">
+                        <field name="source_advance_id"/>
+                        <field name="source_usage_line_id"/>
+                        <field name="source_statement_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_royalty_recoup_ledger_search" model="ir.ui.view">
+        <field name="name">royalty.recoup.ledger.search</field>
+        <field name="model">royalty.recoup.ledger</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="deal_id"/>
+                <field name="party_id"/>
+                <field name="bucket"/>
+                <filter string="Debits" name="debit" domain="[('debit_amount', '>', 0)]"/>
+                <filter string="Credits" name="credit" domain="[('credit_amount', '>', 0)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_royalty_recoup_ledger" model="ir.actions.act_window">
+        <field name="name">Recoupment Ledger</field>
+        <field name="res_model">royalty.recoup.ledger</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

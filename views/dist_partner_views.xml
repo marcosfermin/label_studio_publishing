@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dist_partner_tree" model="ir.ui.view">
+        <field name="name">dist.partner.tree</field>
+        <field name="model">dist.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Distribution Partners">
+                <field name="name"/>
+                <field name="partner_type"/>
+                <field name="partner_id"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_dist_partner_form" model="ir.ui.view">
+        <field name="name">dist.partner.form</field>
+        <field name="model">dist.partner</field>
+        <field name="arch" type="xml">
+            <form string="Distribution Partner">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="partner_type"/>
+                        <field name="partner_id"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dist_partner_search" model="ir.ui.view">
+        <field name="name">dist.partner.search</field>
+        <field name="model">dist.partner</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_type"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_dist_partner" model="ir.actions.act_window">
+        <field name="name">Distribution Partners</field>
+        <field name="res_model">dist.partner</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

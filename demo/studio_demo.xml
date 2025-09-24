@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="demo_studio_room" model="studio.room">
+        <field name="name">Sunset Room A</field>
+        <field name="location">Downtown</field>
+        <field name="capacity">6</field>
+        <field name="hourly_rate">85.0</field>
+        <field name="day_rate">600.0</field>
+        <field name="facilities">Vocal booth, grand piano, analog outboard gear</field>
+    </record>
+
+    <record id="demo_studio_booking" model="studio.booking">
+        <field name="client_id" ref="label_studio_publishing.demo_client_partner"/>
+        <field name="room_id" ref="label_studio_publishing.demo_studio_room"/>
+        <field name="service_type">recording</field>
+        <field name="start_datetime">2024-02-01 14:00:00</field>
+        <field name="end_datetime">2024-02-01 18:00:00</field>
+        <field name="project_name">City Lights Vocal Session</field>
+        <field name="status">confirmed</field>
+        <field name="room_rate">340.0</field>
+    </record>
+
+    <record id="demo_studio_session" model="studio.session">
+        <field name="name">City Lights Session</field>
+        <field name="booking_id" ref="label_studio_publishing.demo_studio_booking"/>
+        <field name="room_id" ref="label_studio_publishing.demo_studio_room"/>
+        <field name="client_id" ref="label_studio_publishing.demo_client_partner"/>
+        <field name="project_name">City Lights Vocal Session</field>
+        <field name="start_time">2024-02-01 14:00:00</field>
+        <field name="end_time">2024-02-01 18:00:00</field>
+        <field name="duration_hours">4.0</field>
+        <field name="state">completed</field>
+    </record>
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="demo_label_deal" model="label.deal">
+        <field name="name">City Lights Single Deal</field>
+        <field name="party_id" ref="label_studio_publishing.demo_artist_partner"/>
+        <field name="label_entity_id" ref="base.main_company"/>
+        <field name="deal_type">record</field>
+        <field name="term_start">2024-01-01</field>
+        <field name="term_end">2025-12-31</field>
+        <field name="territory">Worldwide</field>
+        <field name="exclusivity">exclusive</field>
+        <field name="currency_id" ref="base.USD"/>
+        <field name="master_royalty_rate">18.0</field>
+        <field name="status">active</field>
+        <field name="advance_amount">5000</field>
+    </record>
+</odoo>

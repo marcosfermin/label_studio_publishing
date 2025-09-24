@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_studio_equipment_tree" model="ir.ui.view">
+        <field name="name">studio.equipment.tree</field>
+        <field name="model">studio.equipment</field>
+        <field name="arch" type="xml">
+            <tree string="Studio Equipment">
+                <field name="name"/>
+                <field name="equipment_type"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_studio_equipment_form" model="ir.ui.view">
+        <field name="name">studio.equipment.form</field>
+        <field name="model">studio.equipment</field>
+        <field name="arch" type="xml">
+            <form string="Equipment">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="equipment_type"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_studio_equipment_search" model="ir.ui.view">
+        <field name="name">studio.equipment.search</field>
+        <field name="model">studio.equipment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="equipment_type"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_studio_equipment" model="ir.actions.act_window">
+        <field name="name">Studio Equipment</field>
+        <field name="res_model">studio.equipment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

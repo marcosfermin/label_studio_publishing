@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="demo_music_work" model="music.work">
+        <field name="title">City Lights</field>
+        <field name="composer_ids" eval="[(4, ref('label_studio_publishing.demo_writer_partner'))]"/>
+        <field name="work_type">song</field>
+        <field name="language">English</field>
+    </record>
+
+    <record id="demo_music_recording" model="music.recording">
+        <field name="title">City Lights</field>
+        <field name="work_id" ref="label_studio_publishing.demo_music_work"/>
+        <field name="main_artist_ids" eval="[(4, ref('label_studio_publishing.demo_artist_partner'))]"/>
+        <field name="duration_seconds">210</field>
+        <field name="status">mastered</field>
+    </record>
+
+    <record id="demo_music_release" model="music.release">
+        <field name="title">City Lights</field>
+        <field name="release_type">single</field>
+        <field name="release_date">2024-01-01</field>
+        <field name="main_artist_ids" eval="[(4, ref('label_studio_publishing.demo_artist_partner'))]"/>
+        <field name="recording_ids" eval="[(4, ref('label_studio_publishing.demo_music_recording'))]"/>
+        <field name="status">released</field>
+        <field name="metadata_complete" eval="True"/>
+        <field name="territory">Worldwide</field>
+    </record>
+</odoo>

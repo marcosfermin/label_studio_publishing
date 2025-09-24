@@ -16,6 +16,7 @@ class Partner(models.Model):
     is_label_vendor = fields.Boolean(string='Is Label Vendor', default=False)
     is_distributor = fields.Boolean(string='Is Distributor', default=False)
     is_pro = fields.Boolean(string='Is Performing Rights Organization', default=False)
+    is_studio_client = fields.Boolean(string='Is Studio Client', default=False)
 
     # Banking & Payment Information
     bank_account_number = fields.Char(string='Bank Account Number')
@@ -103,29 +104,29 @@ class Partner(models.Model):
     booking_count = fields.Integer(string='Bookings Count', compute='_compute_booking_count')
     work_count = fields.Integer(string='Works Count', compute='_compute_work_count')
     recording_count = fields.Integer(string='Recordings Count', compute='_compute_recording_count')
-    
-    @api.depends()
+
+    @api.depends('id')
     def _compute_deal_count(self):
         for partner in self:
             partner.deal_count = self.env['label.deal'].search_count([('party_id', '=', partner.id)])
-    
-    @api.depends()
+
+    @api.depends('id')
     def _compute_royalty_statement_count(self):
         for partner in self:
-            partner.royalty_statement_count = self.env['royalty.statement'].search_count([('party_id', '=', partner.id)])
-    
-    @api.depends()
+            partner.royalty_statement_count = self.env['royalty.statement'].search_count([('partner_id', '=', partner.id)])
+
+    @api.depends('id')
     def _compute_booking_count(self):
         for partner in self:
             partner.booking_count = self.env['studio.booking'].search_count([('client_id', '=', partner.id)])
-    
-    @api.depends()
+
+    @api.depends('id')
     def _compute_work_count(self):
         for partner in self:
             # Count works where this partner is a writer/composer
             partner.work_count = self.env['music.work'].search_count([('composer_ids', 'in', partner.id)])
-    
-    @api.depends()
+
+    @api.depends('id')
     def _compute_recording_count(self):
         for partner in self:
             # Count recordings where this partner is the main artist
@@ -170,8 +171,8 @@ class Partner(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'royalty.statement',
             'view_mode': 'tree,form',
-            'domain': [('party_id', '=', self.id)],
-            'context': {'default_party_id': self.id},
+            'domain': [('partner_id', '=', self.id)],
+            'context': {'default_partner_id': self.id},
         }
 
     def action_view_bookings(self):

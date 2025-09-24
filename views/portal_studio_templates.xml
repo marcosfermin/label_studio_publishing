@@ -740,7 +740,7 @@
                                                         <small class="text-muted" t-esc="release.label_id.name if release.label_id else ''"/>
                                                     </td>
                                                     <td>
-                                                        <span t-esc="release.main_artist_id.name if release.main_artist_id else ''"/>
+                                                        <span t-esc="', '.join(release.main_artist_ids.mapped('name'))"/>
                                                     </td>
                                                     <td><small t-esc="release.release_type"/></td>
                                                     <td><small t-esc="release.upc"/></td>

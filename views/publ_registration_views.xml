@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_publ_registration_tree" model="ir.ui.view">
+        <field name="name">publ.registration.tree</field>
+        <field name="model">publ.registration</field>
+        <field name="arch" type="xml">
+            <tree string="PRO Registrations" default_order="registration_date desc">
+                <field name="name"/>
+                <field name="work_id"/>
+                <field name="pro_name"/>
+                <field name="registration_number"/>
+                <field name="registration_date"/>
+                <field name="registration_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_publ_registration_form" model="ir.ui.view">
+        <field name="name">publ.registration.form</field>
+        <field name="model">publ.registration</field>
+        <field name="arch" type="xml">
+            <form string="PRO Registration">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="work_id"/>
+                            <field name="pro_name"/>
+                        </group>
+                        <group>
+                            <field name="registration_number"/>
+                            <field name="registration_date"/>
+                            <field name="registration_status"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_publ_registration_search" model="ir.ui.view">
+        <field name="name">publ.registration.search</field>
+        <field name="model">publ.registration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="work_id"/>
+                <field name="pro_name"/>
+                <filter string="Registered" name="registered" domain="[('registration_status', '=', 'registered')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_publ_registration" model="ir.actions.act_window">
+        <field name="name">PRO Registrations</field>
+        <field name="res_model">publ.registration</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

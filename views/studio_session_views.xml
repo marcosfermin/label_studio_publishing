@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_studio_session_tree" model="ir.ui.view">
+        <field name="name">studio.session.tree</field>
+        <field name="model">studio.session</field>
+        <field name="arch" type="xml">
+            <tree string="Studio Sessions" default_order="start_time desc">
+                <field name="name"/>
+                <field name="booking_id"/>
+                <field name="room_id"/>
+                <field name="engineer_id"/>
+                <field name="client_id"/>
+                <field name="start_time"/>
+                <field name="end_time"/>
+                <field name="duration_hours"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_studio_session_form" model="ir.ui.view">
+        <field name="name">studio.session.form</field>
+        <field name="model">studio.session</field>
+        <field name="arch" type="xml">
+            <form string="Studio Session">
+                <header>
+                    <button name="action_start_session" type="object" string="Start" class="btn-primary" attrs="{'invisible': [('state', '!=', 'scheduled')]}"/>
+                    <button name="action_complete_session" type="object" string="Complete" class="btn-success" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                    <button name="action_cancel_session" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['completed','cancelled'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="scheduled,in_progress,completed,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="booking_id"/>
+                            <field name="project_name"/>
+                            <field name="artist_id"/>
+                        </group>
+                        <group>
+                            <field name="room_id"/>
+                            <field name="engineer_id"/>
+                            <field name="client_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="start_time"/>
+                        <field name="end_time"/>
+                        <field name="duration_hours" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="deliverable_links" widget="text"/>
+                        <field name="notes" widget="html"/>
+                    </group>
+                    <group>
+                        <field name="rating"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_studio_session_search" model="ir.ui.view">
+        <field name="name">studio.session.search</field>
+        <field name="model">studio.session</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="booking_id"/>
+                <field name="room_id"/>
+                <field name="engineer_id"/>
+                <field name="client_id"/>
+                <filter string="Active" name="active" domain="[('state', '!=', 'cancelled')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_studio_session" model="ir.actions.act_window">
+        <field name="name">Studio Sessions</field>
+        <field name="res_model">studio.session</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
