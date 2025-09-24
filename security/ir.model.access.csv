@@ -24,6 +24,7 @@ access_publ_registration_label_exec,publ.registration label exec,model_publ_regi
 access_sync_license_label_exec,sync.license label exec,model_sync_license,group_label_exec,1,1,1,1
 access_dist_partner_label_exec,dist.partner label exec,model_dist_partner,group_label_exec,1,1,1,1
 access_royalty_rule_label_exec,royalty.rule label exec,model_royalty_rule,group_label_exec,1,1,1,1
+access_studio_package_label_exec,studio.package label exec,model_studio_package,group_label_exec,1,1,1,1
 
 # A&R Manager
 access_partner_anr_manager,res.partner anr manager,base.model_res_partner,group_anr_manager,1,1,1,0
@@ -52,6 +53,7 @@ access_studio_room_manager,studio.room studio manager,model_studio_room,group_st
 access_studio_equipment_manager,studio.equipment studio manager,model_studio_equipment,group_studio_manager,1,1,1,0
 access_studio_booking_manager,studio.booking studio manager,model_studio_booking,group_studio_manager,1,1,1,0
 access_studio_session_manager,studio.session studio manager,model_studio_session,group_studio_manager,1,1,1,0
+access_studio_package_manager,studio.package studio manager,model_studio_package,group_studio_manager,1,1,1,0
 
 # Studio Staff
 access_partner_studio_staff,res.partner studio staff,base.model_res_partner,group_studio_staff,1,0,0,0
@@ -59,6 +61,7 @@ access_studio_room_staff,studio.room studio staff,model_studio_room,group_studio
 access_studio_equipment_staff,studio.equipment studio staff,model_studio_equipment,group_studio_staff,1,0,0,0
 access_studio_booking_staff,studio.booking studio staff,model_studio_booking,group_studio_staff,1,1,1,0
 access_studio_session_staff,studio.session studio staff,model_studio_session,group_studio_staff,1,1,1,0
+access_studio_package_staff,studio.package studio staff,model_studio_package,group_studio_staff,1,0,0,0
 
 # Publishing Manager
 access_partner_publishing_manager,res.partner publishing manager,base.model_res_partner,group_publishing_manager,1,1,1,0

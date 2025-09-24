@@ -21,3 +21,4 @@ from . import royalty_payment
 from . import publ_split
 from . import sync_license
 from . import dist_partner
+from . import studio_package
