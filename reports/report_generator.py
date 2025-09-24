@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, api
-from odoo.tools import float_repr
 import base64
 import io
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
+
+from odoo import api, models
+from odoo.tools import float_repr
 
 
 class ReportRoyaltyStatement(models.AbstractModel):
