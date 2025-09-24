@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_music_rights_tree" model="ir.ui.view">
+        <field name="name">music.rights.tree</field>
+        <field name="model">music.rights</field>
+        <field name="arch" type="xml">
+            <tree string="Rights" default_order="start_date desc">
+                <field name="name"/>
+                <field name="rights_type"/>
+                <field name="owner_id"/>
+                <field name="work_id"/>
+                <field name="recording_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="percentage"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_music_rights_form" model="ir.ui.view">
+        <field name="name">music.rights.form</field>
+        <field name="model">music.rights</field>
+        <field name="arch" type="xml">
+            <form string="Rights">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="rights_type"/>
+                            <field name="owner_id"/>
+                            <field name="percentage"/>
+                        </group>
+                        <group>
+                            <field name="work_id"/>
+                            <field name="recording_id"/>
+                            <field name="release_id"/>
+                            <field name="collection_society_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date" attrs="{'readonly': [('perpetual', '=', True)]}"/>
+                            <field name="perpetual"/>
+                        </group>
+                        <group>
+                            <field name="territory" colspan="2"/>
+                            <field name="verified"/>
+                        </group>
+                    </group>
+                    <field name="notes" widget="text"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_music_rights_search" model="ir.ui.view">
+        <field name="name">music.rights.search</field>
+        <field name="model">music.rights</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="rights_type"/>
+                <field name="owner_id"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_music_rights" model="ir.actions.act_window">
+        <field name="name">Rights</field>
+        <field name="res_model">music.rights</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

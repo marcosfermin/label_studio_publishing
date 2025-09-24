@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_royalty_statement_tree" model="ir.ui.view">
+        <field name="name">royalty.statement.tree</field>
+        <field name="model">royalty.statement</field>
+        <field name="arch" type="xml">
+            <tree string="Royalty Statements" default_order="period_start desc">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="total_net_amount"/>
+                <field name="recouped_amount"/>
+                <field name="total_amount"/>
+                <field name="amount_paid"/>
+                <field name="balance_due"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_royalty_statement_form" model="ir.ui.view">
+        <field name="name">royalty.statement.form</field>
+        <field name="model">royalty.statement</field>
+        <field name="arch" type="xml">
+            <form string="Royalty Statement">
+                <header>
+                    <button name="action_set_to_draft" type="object" string="Reset to Draft" class="btn-secondary" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_mark_processing" type="object" string="Process" class="btn-secondary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_mark_sent" type="object" string="Mark Sent" class="btn-secondary" attrs="{'invisible': [('state', 'not in', ['processing','draft'])]}"/>
+                    <button name="action_mark_approved" type="object" string="Approve" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['sent','processing'])]}"/>
+                    <button name="action_mark_paid" type="object" string="Mark Paid" class="btn-success" attrs="{'invisible': [('state', '!=', 'approved')]}"/>
+                    <button name="action_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', '=', 'cancelled')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,processing,sent,approved,paid,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Statement Reference..."/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="statement_date"/>
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                            <field name="due_date"/>
+                        </group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="currency_id"/>
+                            <field name="sent_date" readonly="1"/>
+                            <field name="approved_date" readonly="1"/>
+                            <field name="paid_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Totals">
+                        <group>
+                            <field name="total_gross_amount" readonly="1"/>
+                            <field name="total_fee_amount" readonly="1"/>
+                            <field name="total_net_amount" readonly="1"/>
+                            <field name="manual_adjustment_amount"/>
+                        </group>
+                        <group>
+                            <field name="recouped_amount" readonly="1"/>
+                            <field name="total_amount" readonly="1"/>
+                            <field name="amount_paid" readonly="1"/>
+                            <field name="balance_due" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Usage Lines">
+                            <field name="usage_line_ids" context="{'default_statement_id': active_id}">
+                                <tree string="Usage Lines" editable="bottom">
+                                    <field name="period_start"/>
+                                    <field name="period_end"/>
+                                    <field name="track_name"/>
+                                    <field name="artist_name"/>
+                                    <field name="usage_type"/>
+                                    <field name="net_amount"/>
+                                    <field name="matched_state"/>
+                                    <field name="processed"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Payments">
+                            <field name="payment_line_ids" context="{'default_statement_id': active_id}">
+                                <tree string="Payments" editable="bottom">
+                                    <field name="payment_id"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" readonly="1"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Recoupment">
+                            <field name="recoup_entry_ids" readonly="1">
+                                <tree>
+                                    <field name="date"/>
+                                    <field name="bucket"/>
+                                    <field name="description"/>
+                                    <field name="debit_amount"/>
+                                    <field name="credit_amount"/>
+                                    <field name="balance"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="note" widget="html"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_royalty_statement_search" model="ir.ui.view">
+        <field name="name">royalty.statement.search</field>
+        <field name="model">royalty.statement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Pending Approval" name="pending" domain="[('state', 'in', ['processing','sent'])]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Paid" name="paid" domain="[('state', '=', 'paid')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_royalty_statement" model="ir.actions.act_window">
+        <field name="name">Royalty Statements</field>
+        <field name="res_model">royalty.statement</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

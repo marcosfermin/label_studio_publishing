@@ -77,7 +77,7 @@
     <record id="rule_label_deal_artist_portal" model="ir.rule">
         <field name="name">Artist Portal: Own Deals</field>
         <field name="model_id" ref="model_label_deal"/>
-        <field name="domain_force">[('artist_id', '=', user.partner_id.id)]</field>
+        <field name="domain_force">[('party_id', '=', user.partner_id.id)]</field>
         <field name="groups" eval="[(4, ref('group_portal_artist'))]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="False"/>
@@ -111,7 +111,7 @@
     <record id="rule_music_work_writer_portal" model="ir.rule">
         <field name="name">Writer Portal: Own Works</field>
         <field name="model_id" ref="model_music_work"/>
-        <field name="domain_force">[('writer_ids', 'in', [user.partner_id.id])]</field>
+        <field name="domain_force">[('composer_ids', 'in', [user.partner_id.id])]</field>
         <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="False"/>
@@ -122,7 +122,7 @@
     <record id="rule_publ_split_writer_portal" model="ir.rule">
         <field name="name">Writer Portal: Own Split Sheets</field>
         <field name="model_id" ref="model_publ_split"/>
-        <field name="domain_force">[('writer_id', '=', user.partner_id.id)]</field>
+        <field name="domain_force">[('contributor_id', '=', user.partner_id.id)]</field>
         <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>  <!-- Writers can approve splits -->
@@ -133,7 +133,7 @@
     <record id="rule_publ_registration_writer_portal" model="ir.rule">
         <field name="name">Writer Portal: Own Registrations</field>
         <field name="model_id" ref="model_publ_registration"/>
-        <field name="domain_force">[('work_id.writer_ids', 'in', [user.partner_id.id])]</field>
+        <field name="domain_force">[('work_id.composer_ids', 'in', [user.partner_id.id])]</field>
         <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="False"/>

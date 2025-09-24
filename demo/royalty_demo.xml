@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="demo_royalty_statement" model="royalty.statement">
+        <field name="name">STAT-DEMO-0001</field>
+        <field name="partner_id" ref="label_studio_publishing.demo_artist_partner"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="currency_id" ref="base.USD"/>
+        <field name="period_start">2024-01-01</field>
+        <field name="period_end">2024-01-31</field>
+        <field name="statement_date">2024-02-05</field>
+        <field name="state">approved</field>
+    </record>
+
+    <record id="demo_royalty_usage_line" model="royalty.usage.line">
+        <field name="source_type">distributor</field>
+        <field name="period_start">2024-01-01</field>
+        <field name="period_end">2024-01-31</field>
+        <field name="usage_type">stream</field>
+        <field name="track_name">City Lights</field>
+        <field name="artist_name">Aurora Stone</field>
+        <field name="isrc">US-AAA-24-00001</field>
+        <field name="units">12500</field>
+        <field name="gross_amount">750.0</field>
+        <field name="fees">75.0</field>
+        <field name="currency_id" ref="base.USD"/>
+        <field name="recording_id" ref="label_studio_publishing.demo_music_recording"/>
+        <field name="statement_id" ref="label_studio_publishing.demo_royalty_statement"/>
+        <field name="matched_state">auto_matched</field>
+        <field name="processed" eval="True"/>
+    </record>
+
+    <record id="demo_royalty_payment" model="royalty.payment">
+        <field name="name">PAY-DEMO-0001</field>
+        <field name="partner_id" ref="label_studio_publishing.demo_artist_partner"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="currency_id" ref="base.USD"/>
+        <field name="payment_date">2024-02-15</field>
+        <field name="state">posted</field>
+        <field name="line_ids" eval="[(0, 0, {
+            'statement_id': ref('label_studio_publishing.demo_royalty_statement'),
+            'amount': 675.0
+        })]"/>
+    </record>
+</odoo>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_music_recording_tree" model="ir.ui.view">
+        <field name="name">music.recording.tree</field>
+        <field name="model">music.recording</field>
+        <field name="arch" type="xml">
+            <tree string="Recordings" default_order="title">
+                <field name="title"/>
+                <field name="version"/>
+                <field name="isrc"/>
+                <field name="work_id"/>
+                <field name="first_release_date"/>
+                <field name="status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_music_recording_form" model="ir.ui.view">
+        <field name="name">music.recording.form</field>
+        <field name="model">music.recording</field>
+        <field name="arch" type="xml">
+            <form string="Recording">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,mastered,approved,released,archived"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="title" placeholder="Recording Title..."/></h1>
+                        <h2><field name="internal_recording_id" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="version"/>
+                            <field name="work_id"/>
+                            <field name="language"/>
+                            <field name="genre_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="isrc"/>
+                            <field name="recording_date"/>
+                            <field name="duration_display" readonly="1"/>
+                            <field name="first_release_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Artists">
+                            <group>
+                                <field name="main_artist_ids" widget="many2many_tags"/>
+                                <field name="featured_artist_ids" widget="many2many_tags"/>
+                                <field name="producer_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                        <page string="Technical">
+                            <group>
+                                <group>
+                                    <field name="sample_rate"/>
+                                    <field name="bit_depth"/>
+                                    <field name="bpm"/>
+                                    <field name="key_signature"/>
+                                </group>
+                                <group>
+                                    <field name="loudness_lufs"/>
+                                    <field name="peak_dbfs"/>
+                                    <field name="parental_advisory"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Media">
+                            <group>
+                                <field name="master_file" filename="master_file_name"/>
+                                <field name="artwork" filename="artwork_name" widget="image" class="oe_avatar"/>
+                            </group>
+                        </page>
+                        <page string="Releases">
+                            <field name="release_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Documents">
+                            <field name="session_document_ids" widget="many2many_tags"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_music_recording_search" model="ir.ui.view">
+        <field name="name">music.recording.search</field>
+        <field name="model">music.recording</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="title"/>
+                <field name="isrc"/>
+                <field name="work_id"/>
+                <filter string="Released" name="released" domain="[('status', '=', 'released')]"/>
+                <filter string="Explicit" name="explicit" domain="[('parental_advisory', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_music_recording" model="ir.actions.act_window">
+        <field name="name">Recordings</field>
+        <field name="res_model">music.recording</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

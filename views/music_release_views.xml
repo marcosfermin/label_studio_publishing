@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_music_release_tree" model="ir.ui.view">
+        <field name="name">music.release.tree</field>
+        <field name="model">music.release</field>
+        <field name="arch" type="xml">
+            <tree string="Releases" default_order="release_date desc">
+                <field name="title"/>
+                <field name="release_type"/>
+                <field name="catalog_number"/>
+                <field name="upc"/>
+                <field name="release_date"/>
+                <field name="status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_music_release_form" model="ir.ui.view">
+        <field name="name">music.release.form</field>
+        <field name="model">music.release</field>
+        <field name="arch" type="xml">
+            <form string="Release">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,metadata_review,approved,delivered,released,archived"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="title" placeholder="Release Title..."/></h1>
+                        <h2><field name="catalog_number" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="release_type"/>
+                            <field name="release_date"/>
+                            <field name="original_release_date"/>
+                            <field name="various_artists"/>
+                        </group>
+                        <group>
+                            <field name="label_id"/>
+                            <field name="distributor_id"/>
+                            <field name="upc"/>
+                            <field name="ddex_ready" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Artists & Catalog">
+                            <group>
+                                <field name="main_artist_ids" widget="many2many_tags"/>
+                                <field name="recording_ids" widget="many2many_tags" context="{'default_release_ids': [(4, active_id)]}"/>
+                            </group>
+                        </page>
+                        <page string="Metadata">
+                            <group>
+                                <field name="genre_ids" widget="many2many_tags"/>
+                                <field name="language"/>
+                                <field name="territory"/>
+                                <field name="price_tier"/>
+                            </group>
+                        </page>
+                        <page string="Artwork">
+                            <group>
+                                <field name="cover_artwork" widget="image" class="oe_avatar" filename="cover_artwork_name"/>
+                                <field name="back_artwork" widget="image" filename="cover_artwork_name"/>
+                            </group>
+                        </page>
+                        <page string="Documents">
+                            <field name="contract_document_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Notes">
+                            <field name="liner_notes" widget="html"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_music_release_search" model="ir.ui.view">
+        <field name="name">music.release.search</field>
+        <field name="model">music.release</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="title"/>
+                <field name="catalog_number"/>
+                <field name="upc"/>
+                <field name="release_type"/>
+                <filter string="Released" name="released" domain="[('status', '=', 'released')]"/>
+                <filter string="DDEX Ready" name="ddex_ready" domain="[('ddex_ready', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_music_release" model="ir.actions.act_window">
+        <field name="name">Releases</field>
+        <field name="res_model">music.release</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

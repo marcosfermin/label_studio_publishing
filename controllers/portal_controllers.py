@@ -26,7 +26,7 @@ class LabelStudioPortal(CustomerPortal):
             if 'royalty_statement_count' in counters:
                 values['royalty_statement_count'] = request.env['royalty.statement'].search_count([
                     ('partner_id', '=', partner.id),
-                    ('state', 'in', ['draft', 'sent', 'approved'])
+                    ('state', 'in', ['draft', 'processing', 'sent', 'approved', 'paid'])
                 ]) if self._check_portal_access('royalty.statement') else 0
             
             if 'studio_booking_count' in counters:

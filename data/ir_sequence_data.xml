@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_label_deal" model="ir.sequence">
+        <field name="name">Label Deal</field>
+        <field name="code">label.deal</field>
+        <field name="prefix">DEAL%(y)s</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_music_work" model="ir.sequence">
+        <field name="name">Music Work</field>
+        <field name="code">music.work</field>
+        <field name="prefix">WORK%(y)s</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_music_recording" model="ir.sequence">
+        <field name="name">Music Recording</field>
+        <field name="code">music.recording</field>
+        <field name="prefix">REC%(y)s</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_music_release" model="ir.sequence">
+        <field name="name">Music Release</field>
+        <field name="code">music.release</field>
+        <field name="prefix">REL%(y)s</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_studio_booking" model="ir.sequence">
+        <field name="name">Studio Booking</field>
+        <field name="code">studio.booking</field>
+        <field name="prefix">BOOK%(y)s</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_royalty_statement" model="ir.sequence">
+        <field name="name">Royalty Statement</field>
+        <field name="code">royalty.statement</field>
+        <field name="prefix">STAT%(y)s</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_royalty_payment" model="ir.sequence">
+        <field name="name">Royalty Payment</field>
+        <field name="code">royalty.payment</field>
+        <field name="prefix">PAY%(y)s</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

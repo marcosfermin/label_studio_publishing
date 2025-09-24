@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_royalty_statement" model="mail.template">
+        <field name="name">Royalty Statement Notification</field>
+        <field name="model_id" ref="model_royalty_statement"/>
+        <field name="subject">Royalty Statement ${object.name}</field>
+        <field name="email_from">${(object.company_id.email_formatted or '')|safe}</field>
+        <field name="email_to">${object.partner_id.email or ''}</field>
+        <field name="body_html"><![CDATA[
+            <p>Dear ${object.partner_id.name},</p>
+            <p>Your royalty statement for the period
+               <strong>${format_date(object.period_start)}</strong> -
+               <strong>${format_date(object.period_end)}</strong> is now available.</p>
+            <p>Total amount payable: <strong>${format_amount(object.total_amount, object.currency_id)}</strong>.</p>
+            <p>You can access the detailed statement from your artist portal.</p>
+            <p>Best regards,<br/>${object.company_id.name}</p>
+        ]]></field>
+    </record>
+</odoo>

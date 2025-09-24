@@ -80,10 +80,6 @@
         
         # Wizards
         'views/import_export_wizard_views.xml',
-        'wizards/royalty_statement_import_views.xml',
-        'wizards/royalty_statement_generate_views.xml',
-        'wizards/ddex_export_wizard_views.xml',
-        'wizards/reserve_release_wizard_views.xml',
         
         # Reports
         'reports/royalty_statement_template.xml',

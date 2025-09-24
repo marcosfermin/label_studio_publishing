@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="demo_publ_split_writer" model="publ.split">
+        <field name="work_id" ref="label_studio_publishing.demo_music_work"/>
+        <field name="sequence">10</field>
+        <field name="contributor_id" ref="label_studio_publishing.demo_writer_partner"/>
+        <field name="role">composer</field>
+        <field name="writer_share">75.0</field>
+        <field name="publisher_share">0.0</field>
+    </record>
+
+    <record id="demo_publ_split_publisher" model="publ.split">
+        <field name="work_id" ref="label_studio_publishing.demo_music_work"/>
+        <field name="sequence">20</field>
+        <field name="contributor_id" ref="label_studio_publishing.demo_client_partner"/>
+        <field name="role">publisher</field>
+        <field name="writer_share">0.0</field>
+        <field name="publisher_share">25.0</field>
+    </record>
+
+    <record id="demo_publ_registration" model="publ.registration">
+        <field name="name">City Lights - ASCAP</field>
+        <field name="work_id" ref="label_studio_publishing.demo_music_work"/>
+        <field name="pro_name">ascap</field>
+        <field name="registration_number">ASC123456</field>
+        <field name="registration_date">2024-02-01</field>
+        <field name="registration_status">registered</field>
+    </record>
+</odoo>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="country_group_music_markets" model="res.country.group">
+        <field name="name">Key Music Markets</field>
+        <field name="country_ids" eval="[(4, ref('base.us')), (4, ref('base.gb')), (4, ref('base.ca')), (4, ref('base.fr'))]"/>
+    </record>
+</odoo>

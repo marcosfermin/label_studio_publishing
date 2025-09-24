@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import base64
 import io
 from collections import defaultdict
 from datetime import datetime
 
 from odoo import api, models
-from odoo.tools import float_repr
 
 
 class ReportRoyaltyStatement(models.AbstractModel):
@@ -63,41 +61,50 @@ class ReportStudioBookingConfirmation(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         """Generate report values for booking confirmation"""
         bookings = self.env['studio.booking'].browse(docids)
-        
+
         report_data = []
         for booking in bookings:
-            # Calculate session schedule
-            sessions = []
-            current_date = booking.start_date
-            while current_date <= booking.end_date:
-                sessions.append({
-                    'date': current_date,
-                    'start_time': booking.start_time,
-                    'end_time': booking.end_time,
-                    'duration': booking.duration,
-                })
-                current_date = current_date + booking.session_frequency
-            
-            # Equipment list
-            equipment_list = []
-            if booking.equipment_ids:
-                for equipment in booking.equipment_ids:
-                    equipment_list.append({
-                        'name': equipment.name,
-                        'category': equipment.category,
-                        'daily_rate': equipment.daily_rate,
-                    })
-            
+            session_records = booking.session_ids.sorted(lambda s: (s.start_time or s.create_date or datetime.min))
+            if session_records:
+                sessions = [
+                    {
+                        'name': session.name,
+                        'start_time': session.start_time,
+                        'end_time': session.end_time,
+                        'duration_hours': session.duration_hours,
+                        'engineer': session.engineer_id,
+                    }
+                    for session in session_records
+                ]
+            else:
+                sessions = [
+                    {
+                        'name': booking.name,
+                        'start_time': booking.start_datetime,
+                        'end_time': booking.end_datetime,
+                        'duration_hours': booking.duration_hours,
+                        'engineer': booking.engineer_id,
+                    }
+                ]
+
+            equipment_list = [
+                {
+                    'name': equipment.name,
+                    'equipment_type': equipment.equipment_type,
+                }
+                for equipment in booking.equipment_ids
+            ]
+
             booking_data = {
                 'booking': booking,
                 'sessions': sessions,
                 'equipment_list': equipment_list,
-                'total_studio_cost': booking.total_amount - booking.equipment_cost,
+                'total_studio_cost': booking.total_amount - (booking.equipment_cost or 0.0),
                 'deposit_due': booking.deposit_amount,
                 'balance_due': booking.total_amount - booking.deposit_amount,
             }
             report_data.append(booking_data)
-        
+
         return {
             'doc_ids': docids,
             'doc_model': 'studio.booking',
@@ -115,34 +122,49 @@ class ReportRemittanceAdvice(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         """Generate report values for remittance advice"""
         payments = self.env['royalty.payment'].browse(docids)
-        
+
         report_data = []
         for payment in payments:
-            # Group lines by work/recording
-            work_groups = defaultdict(lambda: {
-                'lines': [],
-                'total_amount': 0.0,
-                'total_units': 0,
-            })
-            
-            for line in payment.payment_line_ids:
-                work_key = line.work_id.title if line.work_id else 'Unmatched Usage'
-                work_groups[work_key]['lines'].append(line)
-                work_groups[work_key]['total_amount'] += line.amount
-                work_groups[work_key]['total_units'] += line.usage_line_id.units if line.usage_line_id else 0
-            
-            # Calculate deductions
-            total_deductions = payment.withholding_tax + payment.admin_fee + payment.advance_recoupment
-            
+            statement_lines = []
+            statements = payment.line_ids.mapped('statement_id')
+
+            for line in payment.line_ids:
+                statement = line.statement_id
+                statement_lines.append({
+                    'line': line,
+                    'statement': statement,
+                    'amount': line.amount,
+                    'period_start': statement.period_start,
+                    'period_end': statement.period_end,
+                    'balance_due': statement.balance_due,
+                })
+
+            period_start_dates = [s.period_start for s in statements if s.period_start]
+            period_end_dates = [s.period_end for s in statements if s.period_end]
+            period_start = min(period_start_dates) if period_start_dates else False
+            period_end = max(period_end_dates) if period_end_dates else False
+
+            withholding_tax = getattr(payment, 'withholding_tax', 0.0) or 0.0
+            admin_fee = getattr(payment, 'admin_fee', 0.0) or 0.0
+            advance_recoupment = getattr(payment, 'advance_recoupment', 0.0) or 0.0
+            total_deductions = withholding_tax + admin_fee + advance_recoupment
+
             payment_data = {
                 'payment': payment,
-                'work_groups': work_groups,
+                'statement_lines': statement_lines,
                 'total_deductions': total_deductions,
-                'net_payment': payment.total_amount - total_deductions,
-                'period_label': f"{payment.period_start.strftime('%b %Y')} - {payment.period_end.strftime('%b %Y')}",
+                'net_payment': payment.amount_total - total_deductions,
+                'period_label': (
+                    f"{period_start.strftime('%b %Y')} - {period_end.strftime('%b %Y')}"
+                    if period_start and period_end
+                    else False
+                ),
+                'withholding_tax': withholding_tax,
+                'admin_fee': admin_fee,
+                'advance_recoupment': advance_recoupment,
             }
             report_data.append(payment_data)
-        
+
         return {
             'doc_ids': docids,
             'doc_model': 'royalty.payment',
