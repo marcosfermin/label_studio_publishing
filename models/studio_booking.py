@@ -334,3 +334,14 @@ class StudioBooking(models.Model):
             date_deadline=self.start_datetime.date() - timedelta(days=1),
             summary='Send 24h booking reminder',
         )
+
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    studio_booking_id = fields.Many2one(
+        'studio.booking',
+        string='Studio Booking',
+        ondelete='set null',
+        help='Booking that generated this invoice.'
+    )
