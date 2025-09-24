@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Portal Menu Extension -->
+    <template id="portal_layout_menu_extend" inherit_id="portal.portal_layout">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'royalty' or page_name == 'royalty_statement' or page_name == 'catalog'" 
+                class="breadcrumb-item">
+                <a href="/my/royalties">Royalties</a>
+            </li>
+            <li t-if="page_name == 'studio_bookings' or page_name == 'studio_booking' or page_name == 'studio_request'" 
+                class="breadcrumb-item">
+                <a href="/my/studio">Studio</a>
+            </li>
+            <li t-if="page_name == 'approvals'" class="breadcrumb-item">
+                <a href="/my/approvals">Approvals</a>
+            </li>
+            
+            <li t-if="page_name == 'royalty_statement'" class="breadcrumb-item active">Statement Details</li>
+            <li t-if="page_name == 'catalog'" class="breadcrumb-item active">Catalog</li>
+            <li t-if="page_name == 'studio_booking'" class="breadcrumb-item active">Booking Details</li>
+            <li t-if="page_name == 'studio_request'" class="breadcrumb-item active">New Booking</li>
+        </xpath>
+    </template>
+
+    <!-- Portal Home Counter Extension -->
+    <template id="portal_my_home_extend" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[@class='o_portal_docs']" position="inside">
+            
+            <!-- Royalty Section for Artists/Writers -->
+            <t t-if="request.env.user.partner_id.is_artist or request.env.user.partner_id.is_writer">
+                <div class="col-lg-6 col-xl-4 mb-3" t-if="royalty_statement_count">
+                    <a class="o_portal_doc_wrapper" href="/my/royalties">
+                        <div class="o_portal_doc_card card">
+                            <div class="card-body">
+                                <i class="fa fa-money fa-2x text-success"></i>
+                                <div class="o_portal_doc_count">
+                                    <strong t-esc="royalty_statement_count"/>
+                                    <span>Royalty Statement<t t-if="royalty_statement_count > 1">s</t></span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-6 col-xl-4 mb-3" t-if="pending_approval_count">
+                    <a class="o_portal_doc_wrapper" href="/my/approvals">
+                        <div class="o_portal_doc_card card">
+                            <div class="card-body">
+                                <i class="fa fa-check-circle fa-2x text-warning"></i>
+                                <div class="o_portal_doc_count">
+                                    <strong t-esc="pending_approval_count"/>
+                                    <span>Pending Approval<t t-if="pending_approval_count > 1">s</t></span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </t>
+
+            <!-- Studio Section for Studio Clients -->
+            <t t-if="request.env.user.partner_id.is_studio_client">
+                <div class="col-lg-6 col-xl-4 mb-3" t-if="studio_booking_count">
+                    <a class="o_portal_doc_wrapper" href="/my/studio">
+                        <div class="o_portal_doc_card card">
+                            <div class="card-body">
+                                <i class="fa fa-calendar fa-2x text-primary"></i>
+                                <div class="o_portal_doc_count">
+                                    <strong t-esc="studio_booking_count"/>
+                                    <span>Studio Booking<t t-if="studio_booking_count > 1">s</t></span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </t>
+
+        </xpath>
+    </template>
+
+    <!-- Royalty Dashboard -->
+    <template id="portal_royalties" name="Royalty Dashboard">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Royalties</t>
+            </t>
+
+            <div class="row mt-3">
+                <!-- Summary Cards -->
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-lg-3 col-6 mb-3">
+                            <div class="card bg-primary text-white h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-dollar-sign fa-2x opacity-75"></i>
+                                        <div class="ms-3">
+                                            <div class="h4 mb-0" t-field="summary_stats['total_earnings']" 
+                                                 t-options="{'widget': 'monetary', 'display_currency': user.company_id.currency_id}"/>
+                                            <small class="opacity-75">Total Earnings</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-6 mb-3">
+                            <div class="card bg-success text-white h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-calendar fa-2x opacity-75"></i>
+                                        <div class="ms-3">
+                                            <div class="h4 mb-0" t-field="summary_stats['ytd_earnings']" 
+                                                 t-options="{'widget': 'monetary', 'display_currency': user.company_id.currency_id}"/>
+                                            <small class="opacity-75">YTD Earnings</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-6 mb-3">
+                            <div class="card bg-info text-white h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-file-alt fa-2x opacity-75"></i>
+                                        <div class="ms-3">
+                                            <div class="h4 mb-0" t-esc="summary_stats['total_statements']"/>
+                                            <small class="opacity-75">Total Statements</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-6 mb-3">
+                            <div class="card bg-warning text-white h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-exclamation-triangle fa-2x opacity-75"></i>
+                                        <div class="ms-3">
+                                            <div class="h4 mb-0" t-esc="summary_stats['pending_approval']"/>
+                                            <small class="opacity-75">Pending Approval</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <a href="/my/catalog" class="btn btn-outline-primary btn-lg w-100">
+                                        <i class="fa fa-music"></i> View Catalog
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="/my/approvals" class="btn btn-outline-warning btn-lg w-100">
+                                        <i class="fa fa-check"></i> Pending Approvals
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <button type="button" class="btn btn-outline-info btn-lg w-100" 
+                                            data-bs-toggle="modal" data-bs-target="#exportModal">
+                                        <i class="fa fa-download"></i> Export Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statements List -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Royalty Statements</h5>
+                            <div class="d-flex">
+                                <!-- Date Range Filter -->
+                                <form method="get" class="d-flex me-3">
+                                    <input type="hidden" name="sortby" t-att-value="sortby"/>
+                                    <div class="input-group input-group-sm">
+                                        <input type="date" name="date_begin" class="form-control" 
+                                               t-att-value="date_begin"/>
+                                        <input type="date" name="date_end" class="form-control" 
+                                               t-att-value="date_end"/>
+                                        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+                                    </div>
+                                </form>
+                                
+                                <!-- Sort Dropdown -->
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                            type="button" data-bs-toggle="dropdown">
+                                        Sort: <t t-esc="searchbar_sortings[sortby]['label']"/>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li t-foreach="searchbar_sortings" t-as="option">
+                                            <a class="dropdown-item" 
+                                               t-att-href="'%s?sortby=%s&amp;date_begin=%s&amp;date_end=%s' % (default_url, option, date_begin, date_end)"
+                                               t-esc="searchbar_sortings[option]['label']"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <t t-if="not statements">
+                            <div class="card-body text-center text-muted py-5">
+                                <i class="fa fa-file-alt fa-3x mb-3"></i>
+                                <h5>No Statements Found</h5>
+                                <p>No royalty statements found for the selected period.</p>
+                            </div>
+                        </t>
+                        
+                        <t t-if="statements">
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Period</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="statements" t-as="statement">
+                                            <td>
+                                                <strong t-esc="statement.period_start.strftime('%b %Y')"/>
+                                                <t t-if="statement.period_end != statement.period_start">
+                                                    - <span t-esc="statement.period_end.strftime('%b %Y')"/>
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <span t-field="statement.total_amount" 
+                                                      t-options="{'widget': 'monetary', 'display_currency': user.company_id.currency_id}"/>
+                                            </td>
+                                            <td>
+                                                <span class="badge" 
+                                                      t-attf-class="badge-#{statement.state == 'approved' and 'success' or statement.state == 'sent' and 'warning' or 'secondary'}">
+                                                    <t t-esc="dict(statement._fields['state'].selection)[statement.state]"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span t-field="statement.statement_date"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <a t-attf-href="/my/royalties/#{statement.id}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    View Details
+                                                </a>
+                                                <t t-if="statement.state in ['approved', 'paid']">
+                                                    <a t-attf-href="/my/statement/#{statement.id}/download" 
+                                                       class="btn btn-sm btn-outline-secondary ms-1">
+                                                        <i class="fa fa-download"></i>
+                                                    </a>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="card-footer" t-if="pager['page_count'] > 1">
+                                <t t-call="portal.pager"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="col-12 mt-4" t-if="recent_usage">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Recent Activity (Last 3 Months)</h6>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Period</th>
+                                        <th>Track</th>
+                                        <th>Service</th>
+                                        <th>Territory</th>
+                                        <th>Units</th>
+                                        <th>Earnings</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="recent_usage[:10]" t-as="usage">
+                                        <td>
+                                            <small t-esc="usage.period_start.strftime('%b %Y')"/>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold" t-esc="usage.track_name"/>
+                                            <small class="text-muted" t-esc="usage.artist_name"/>
+                                        </td>
+                                        <td><small t-esc="usage.service"/></td>
+                                        <td><small t-esc="usage.territory_code"/></td>
+                                        <td><span t-esc="'{:,}'.format(usage.units)"/></td>
+                                        <td>
+                                            <span t-field="usage.net_amount" 
+                                                  t-options="{'widget': 'monetary', 'display_currency': user.company_id.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Modal -->
+            <div class="modal fade" id="exportModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post" action="/my/usage/export">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Export Usage Data</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Date Range</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="date" name="date_from" class="form-control" 
+                                                   t-att-value="(date.today() - timedelta(days=365)).strftime('%Y-%m-%d')" required="1"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="date" name="date_to" class="form-control" 
+                                                   t-att-value="date.today().strftime('%Y-%m-%d')" required="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Export CSV</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </t>
+    </template>
+
+    <!-- Royalty Statement Detail -->
+    <template id="portal_royalty_statement_detail" name="Royalty Statement Detail">
+        <t t-call="portal.portal_layout">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Statement Header -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="mb-1">Royalty Statement</h4>
+                                <p class="mb-0 text-muted">
+                                    Period: <span t-esc="statement.period_start.strftime('%B %Y')"/>
+                                    <t t-if="statement.period_end != statement.period_start">
+                                        - <span t-esc="statement.period_end.strftime('%B %Y')"/>
+                                    </t>
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <div class="h4 mb-1" t-field="statement.total_amount" 
+                                     t-options="{'widget': 'monetary', 'display_currency': user.company_id.currency_id}"/>
+                                <span class="badge" 
+                                      t-attf-class="badge-#{statement.state == 'approved' and 'success' or statement.state == 'sent' and 'warning' or 'secondary'}">
+                                    <t t-esc="dict(statement._fields['state'].selection)[statement.state]"/>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="card-footer" t-if="statement.state == 'sent'">
+                            <form method="post" t-attf-action="/my/royalties/#{statement.id}/approve" 
+                                  class="d-flex align-items-center justify-content-between">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="flex-grow-1 me-3">
+                                    <input type="text" name="approval_note" class="form-control" 
+                                           placeholder="Optional approval note..."/>
+                                </div>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-check"></i> Approve Statement
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="card-footer" t-if="statement.state in ['approved', 'paid']">
+                            <a t-attf-href="/my/statement/#{statement.id}/download" 
+                               class="btn btn-primary">
+                                <i class="fa fa-download"></i> Download PDF
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Usage Details -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Usage Details</h5>
+                        </div>
+                        
+                        <t t-if="not usage_groups">
+                            <div class="card-body text-center text-muted py-5">
+                                <i class="fa fa-music fa-3x mb-3"></i>
+                                <h5>No Usage Data</h5>
+                                <p>No usage data found for this statement period.</p>
+                            </div>
+                        </t>
+                        
+                        <t t-if="usage_groups">
+                            <div class="accordion" id="usageAccordion">
+                                <div class="accordion-item" t-foreach="usage_groups" t-as="title">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" 
+                                                data-bs-toggle="collapse" 
+                                                t-attf-data-bs-target="#usage#{title_index}">
+                                            <div class="d-flex justify-content-between w-100 me-3">
+                                                <div>
+                                                    <strong t-esc="title"/>
+                                                    <div class="small text-muted">
+                                                        <span t-esc="'{:,}'.format(usage_groups[title]['total_units'])"/> units
+                                                        across <span t-esc="len(usage_groups[title]['territories'])"/> territories
+                                                    </div>
+                                                </div>
+                                                <div class="text-end">
+                                                    <div t-field="usage_groups[title]['total_amount']" 
+                                                         t-options="{'widget': 'monetary', 'display_currency': user.company_id.currency_id}"/>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div t-attf-id="usage#{title_index}" class="accordion-collapse collapse" 
+                                         data-bs-parent="#usageAccordion">
+                                        <div class="accordion-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Service</th>
+                                                            <th>Territory</th>
+                                                            <th>Usage Type</th>
+                                                            <th>Units</th>
+                                                            <th>Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr t-foreach="usage_groups[title]['lines']" t-as="line">
+                                                            <td><small t-esc="line.service"/></td>
+                                                            <td><small t-esc="line.territory_code"/></td>
+                                                            <td><small t-esc="line.usage_type"/></td>
+                                                            <td><span t-esc="'{:,}'.format(line.units)"/></td>
+                                                            <td>
+                                                                <span t-field="line.net_amount" 
+                                                                      t-options="{'widget': 'monetary', 'display_currency': user.company_id.currency_id}"/>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

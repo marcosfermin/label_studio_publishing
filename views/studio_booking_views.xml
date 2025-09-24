@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Studio Booking Calendar View -->
+    <record id="view_studio_booking_calendar" model="ir.ui.view">
+        <field name="name">studio.booking.calendar</field>
+        <field name="model">studio.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Studio Bookings" 
+                     date_start="start_datetime" 
+                     date_stop="end_datetime"
+                     color="room_id"
+                     quick_add="False"
+                     event_open_popup="True"
+                     event_limit="5">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="room_id"/>
+                <field name="status"/>
+                <field name="total_amount"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Studio Booking Form View -->
+    <record id="view_studio_booking_form" model="ir.ui.view">
+        <field name="name">studio.booking.form</field>
+        <field name="model">studio.booking</field>
+        <field name="arch" type="xml">
+            <form string="Studio Booking">
+                <header>
+                    <button name="action_confirm_booking" type="object" string="Confirm Booking" 
+                            class="btn-primary" attrs="{'invisible': [('status', 'not in', ['quote', 'pending'])]}"/>
+                    <button name="action_start_session" type="object" string="Start Session" 
+                            class="btn-success" attrs="{'invisible': [('status', '!=', 'confirmed')]}"/>
+                    <button name="action_complete_session" type="object" string="Complete Session" 
+                            class="btn-success" attrs="{'invisible': [('status', '!=', 'in_session')]}"/>
+                    <button name="action_cancel_booking" type="object" string="Cancel" 
+                            class="btn-secondary" attrs="{'invisible': [('status', 'in', ['completed', 'cancelled', 'no_show'])]}"/>
+                    <button name="action_mark_no_show" type="object" string="Mark No Show" 
+                            class="btn-warning" attrs="{'invisible': [('status', '!=', 'confirmed')]}"/>
+                    <field name="status" widget="statusbar" statusbar_visible="quote,pending,confirmed,in_session,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object" 
+                                class="oe_stat_button" icon="fa-money">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                        <button name="action_view_sessions" type="object" 
+                                class="oe_stat_button" icon="fa-play">
+                            <field name="session_count" widget="statinfo" string="Sessions"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="booking_details">
+                            <field name="client_id"/>
+                            <field name="room_id"/>
+                            <field name="engineer_id"/>
+                            <field name="service_type"/>
+                        </group>
+                        <group name="datetime">
+                            <field name="start_datetime"/>
+                            <field name="end_datetime"/>
+                            <field name="duration_hours" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Contact Information" name="contact">
+                            <group>
+                                <group>
+                                    <field name="contact_name"/>
+                                    <field name="contact_phone" widget="phone"/>
+                                    <field name="contact_email" widget="email"/>
+                                </group>
+                                <group>
+                                    <field name="project_name"/>
+                                    <field name="deliverable_format"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="project_description" placeholder="Brief description of the project..."/>
+                                <field name="reference_tracks" placeholder="Reference track links or descriptions..."/>
+                                <field name="special_requirements" placeholder="Any special requirements or notes..."/>
+                            </group>
+                        </page>
+
+                        <page string="Equipment &amp; Services" name="equipment">
+                            <group>
+                                <field name="equipment_ids" widget="many2many_tags"/>
+                                <field name="additional_services" placeholder="Any additional services requested..."/>
+                                <field name="equipment_notes" placeholder="Equipment notes and requirements..."/>
+                            </group>
+                        </page>
+
+                        <page string="Pricing" name="pricing">
+                            <group>
+                                <group string="Rates">
+                                    <field name="room_rate"/>
+                                    <field name="engineer_rate"/>
+                                    <field name="equipment_cost"/>
+                                    <field name="additional_costs"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                                <group string="Totals">
+                                    <field name="subtotal" readonly="1"/>
+                                    <field name="tax_amount" readonly="1"/>
+                                    <field name="total_amount" readonly="1" class="oe_subtotal_footer_separator"/>
+                                </group>
+                            </group>
+
+                            <group string="Deposit">
+                                <group>
+                                    <field name="deposit_required"/>
+                                    <field name="deposit_percentage" attrs="{'invisible': [('deposit_required', '=', False)]}"/>
+                                    <field name="deposit_amount" readonly="1" attrs="{'invisible': [('deposit_required', '=', False)]}"/>
+                                </group>
+                                <group>
+                                    <field name="deposit_paid" attrs="{'invisible': [('deposit_required', '=', False)]}"/>
+                                    <field name="deposit_payment_date" attrs="{'invisible': [('deposit_paid', '=', False)]}"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Files &amp; Deliverables" name="files">
+                            <group>
+                                <field name="session_files" placeholder="Links to session files, stems, mixes..."/>
+                            </group>
+                        </page>
+
+                        <page string="Agreement" name="agreement">
+                            <group>
+                                <group>
+                                    <field name="service_agreement_signed"/>
+                                    <field name="service_agreement_date" attrs="{'invisible': [('service_agreement_signed', '=', False)]}"/>
+                                </group>
+                                <group>
+                                    <field name="service_agreement_doc" attrs="{'invisible': [('service_agreement_signed', '=', False)]}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Studio Booking Tree View -->
+    <record id="view_studio_booking_tree" model="ir.ui.view">
+        <field name="name">studio.booking.tree</field>
+        <field name="model">studio.booking</field>
+        <field name="arch" type="xml">
+            <tree string="Studio Bookings" sample="1"
+                  decoration-success="status == 'completed'"
+                  decoration-info="status in ['confirmed', 'in_session']"
+                  decoration-warning="status == 'pending'"
+                  decoration-muted="status in ['cancelled', 'no_show']">
+                <field name="name"/>
+                <field name="start_datetime"/>
+                <field name="duration_hours" widget="float_time"/>
+                <field name="client_id"/>
+                <field name="room_id"/>
+                <field name="engineer_id" optional="hide"/>
+                <field name="service_type"/>
+                <field name="total_amount" sum="Total Revenue"/>
+                <field name="status" decoration-success="status == 'completed'" 
+                       decoration-info="status in ['confirmed', 'in_session']"
+                       decoration-warning="status == 'pending'"
+                       decoration-muted="status in ['cancelled', 'no_show']"/>
+                <field name="deposit_paid" optional="hide"/>
+                <field name="invoiced" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Studio Booking Kanban View -->
+    <record id="view_studio_booking_kanban" model="ir.ui.view">
+        <field name="name">studio.booking.kanban</field>
+        <field name="model">studio.booking</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column" sample="1">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="room_id"/>
+                <field name="start_datetime"/>
+                <field name="duration_hours"/>
+                <field name="total_amount"/>
+                <field name="currency_id"/>
+                <field name="status"/>
+                <field name="deposit_paid"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_dropdown_kanban dropdown">
+                                <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown" data-display="static" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                    <span class="fa fa-ellipsis-v"/>
+                                </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <a role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                                    <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                    <div class="dropdown-divider"/>
+                                    <a role="menuitem" name="action_confirm_booking" type="object" class="dropdown-item" 
+                                       t-if="record.status.raw_value in ['quote', 'pending']">Confirm</a>
+                                    <a role="menuitem" name="action_start_session" type="object" class="dropdown-item" 
+                                       t-if="record.status.raw_value == 'confirmed'">Start Session</a>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="client_id"/>
+                                        </strong>
+                                        <br/>
+                                        <span class="o_kanban_record_subtitle text-muted">
+                                            <field name="room_id"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <field name="start_datetime" widget="date"/>
+                                            <br/>
+                                            <span class="text-muted">
+                                                <field name="duration_hours" widget="float_time"/> hours
+                                            </span>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <field name="total_amount" widget="monetary"/>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <t t-if="record.deposit_paid.raw_value">
+                                            <span class="badge badge-success">Deposit Paid</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge badge-warning">Deposit Due</span>
+                                        </t>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Studio Booking Search View -->
+    <record id="view_studio_booking_search" model="ir.ui.view">
+        <field name="name">studio.booking.search</field>
+        <field name="model">studio.booking</field>
+        <field name="arch" type="xml">
+            <search string="Search Studio Bookings">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="room_id"/>
+                <field name="engineer_id"/>
+                <field name="project_name"/>
+                <separator/>
+                <filter string="Pending" name="pending" domain="[('status', '=', 'pending')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('status', '=', 'confirmed')]"/>
+                <filter string="In Session" name="in_session" domain="[('status', '=', 'in_session')]"/>
+                <filter string="Completed" name="completed" domain="[('status', '=', 'completed')]"/>
+                <separator/>
+                <filter string="Today" name="today" 
+                        domain="[('start_datetime', '&gt;=', datetime.datetime.now().replace(hour=0, minute=0, second=0)),
+                                ('start_datetime', '&lt;', (datetime.datetime.now() + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0))]"/>
+                <filter string="This Week" name="this_week" 
+                        domain="[('start_datetime', '&gt;=', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday())).replace(hour=0, minute=0, second=0)),
+                                ('start_datetime', '&lt;', (datetime.datetime.now() + datetime.timedelta(days=7-datetime.datetime.now().weekday())).replace(hour=0, minute=0, second=0))]"/>
+                <filter string="Next Week" name="next_week" 
+                        domain="[('start_datetime', '&gt;=', (datetime.datetime.now() + datetime.timedelta(days=7-datetime.datetime.now().weekday())).replace(hour=0, minute=0, second=0)),
+                                ('start_datetime', '&lt;', (datetime.datetime.now() + datetime.timedelta(days=14-datetime.datetime.now().weekday())).replace(hour=0, minute=0, second=0))]"/>
+                <separator/>
+                <filter string="Deposit Paid" name="deposit_paid" domain="[('deposit_paid', '=', True)]"/>
+                <filter string="Deposit Due" name="deposit_due" domain="[('deposit_paid', '=', False), ('deposit_required', '=', True)]"/>
+                <filter string="Invoiced" name="invoiced" domain="[('invoiced', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Room" name="group_room" context="{'group_by': 'room_id'}"/>
+                    <filter string="Engineer" name="group_engineer" context="{'group_by': 'engineer_id'}"/>
+                    <filter string="Service Type" name="group_service" context="{'group_by': 'service_type'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'start_datetime:day'}"/>
+                    <filter string="Week" name="group_week" context="{'group_by': 'start_datetime:week'}"/>
+                    <filter string="Month" name="group_month" context="{'group_by': 'start_datetime:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Studio Booking Action -->
+    <record id="action_studio_booking" model="ir.actions.act_window">
+        <field name="name">Studio Bookings</field>
+        <field name="res_model">studio.booking</field>
+        <field name="view_mode">calendar,kanban,tree,form</field>
+        <field name="context">{'search_default_this_week': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No bookings yet!
+            </p>
+            <p>
+                Schedule studio sessions with clients. The calendar view shows all bookings
+                and you can drag and drop to reschedule them.
+            </p>
+        </field>
+    </record>
+
+    <!-- Studio Room Views -->
+    <record id="view_studio_room_form" model="ir.ui.view">
+        <field name="name">studio.room.form</field>
+        <field name="model">studio.room</field>
+        <field name="arch" type="xml">
+            <form string="Studio Room">
+                <header>
+                    <button name="action_book_room" type="object" string="Book Room" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bookings" type="object" 
+                                class="oe_stat_button" icon="fa-calendar">
+                            <field name="booking_count" widget="statinfo" string="Bookings"/>
+                        </button>
+                        <button name="action_view_current_booking" type="object" 
+                                class="oe_stat_button" icon="fa-play"
+                                attrs="{'invisible': [('current_booking_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Current</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" 
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <widget name="web_ribbon" title="Under Maintenance" bg_color="bg-warning" 
+                            attrs="{'invisible': [('maintenance_mode', '=', False)]}"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Room name..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="basic_info">
+                            <field name="sequence"/>
+                            <field name="location"/>
+                            <field name="capacity"/>
+                            <field name="size_sqft"/>
+                            <field name="color" widget="color"/>
+                        </group>
+                        <group name="pricing">
+                            <field name="hourly_rate"/>
+                            <field name="day_rate"/>
+                            <field name="overtime_rate"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Features &amp; Equipment" name="features">
+                            <group string="Technical Specifications">
+                                <group>
+                                    <field name="console_type"/>
+                                    <field name="monitors"/>
+                                    <field name="acoustic_treatment"/>
+                                </group>
+                                <group>
+                                    <field name="isolation_booths"/>
+                                    <field name="has_piano"/>
+                                    <field name="has_drums"/>
+                                    <field name="has_amps"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="facilities" placeholder="ISO booth, piano, amp collection, etc."/>
+                                <field name="equipment_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+
+                        <page string="Availability" name="availability">
+                            <group>
+                                <group>
+                                    <field name="maintenance_mode"/>
+                                    <field name="calendar_id" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="utilization_rate" widget="percentage"/>
+                                    <field name="total_revenue"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="availability_notes" placeholder="Notes about availability, restrictions, etc."/>
+                            </group>
+                        </page>
+
+                        <page string="Current Status" name="status">
+                            <group>
+                                <group>
+                                    <field name="is_occupied"/>
+                                    <field name="current_booking_id" attrs="{'invisible': [('current_booking_id', '=', False)]}"/>
+                                </group>
+                                <group>
+                                    <field name="next_booking_id" attrs="{'invisible': [('next_booking_id', '=', False)]}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_studio_room_tree" model="ir.ui.view">
+        <field name="name">studio.room.tree</field>
+        <field name="model">studio.room</field>
+        <field name="arch" type="xml">
+            <tree string="Studio Rooms" sample="1">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="capacity"/>
+                <field name="hourly_rate"/>
+                <field name="day_rate"/>
+                <field name="is_occupied" decoration-success="is_occupied == False" 
+                       decoration-warning="is_occupied == True"/>
+                <field name="utilization_rate" widget="percentage" optional="hide"/>
+                <field name="booking_count" optional="hide"/>
+                <field name="total_revenue" sum="Total Revenue" optional="hide"/>
+                <field name="maintenance_mode" optional="hide"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_studio_room" model="ir.actions.act_window">
+        <field name="name">Studio Rooms</field>
+        <field name="res_model">studio.room</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your first studio room!
+            </p>
+            <p>
+                Define your studio rooms with pricing, equipment, and availability.
+                Rooms will be available for booking once configured.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Deal Form View -->
+    <record id="view_label_deal_form" model="ir.ui.view">
+        <field name="name">label.deal.form</field>
+        <field name="model">label.deal</field>
+        <field name="arch" type="xml">
+            <form string="Record Deal">
+                <header>
+                    <button name="action_sign_deal" type="object" string="Sign Deal" 
+                            class="btn-primary" attrs="{'invisible': [('status', 'in', ['signed', 'active', 'expired', 'terminated'])]}"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,negotiating,pending_signature,signed,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_advances" type="object" 
+                                class="oe_stat_button" icon="fa-money">
+                            <field name="advance_count" widget="statinfo" string="Advances"/>
+                        </button>
+                        <button name="action_view_recoup_ledger" type="object" 
+                                class="oe_stat_button" icon="fa-calculator">
+                            <field name="recoup_balance" widget="monetary" string="Recoup Balance"/>
+                        </button>
+                        <button name="action_view_statements" type="object" 
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="statement_count" widget="statinfo" string="Statements"/>
+                        </button>
+                        <button name="action_view_catalog" type="object" 
+                                class="oe_stat_button" icon="fa-music">
+                            <field name="catalog_count" widget="statinfo" string="Catalog"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Deal Name..."/>
+                        </h1>
+                        <h2>
+                            <field name="deal_number" readonly="1"/>
+                        </h2>
+                    </div>
+
+                    <group>
+                        <group name="basic_info">
+                            <field name="party_id" options="{'no_create': True}"/>
+                            <field name="deal_type"/>
+                            <field name="label_entity_id"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                        </group>
+                        <group name="dates">
+                            <field name="term_start"/>
+                            <field name="term_end"/>
+                            <field name="signed_date" attrs="{'readonly': [('status', 'not in', ['signed', 'active'])]}"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Deal Terms" name="terms">
+                            <group string="Territory &amp; Exclusivity">
+                                <group>
+                                    <field name="territory"/>
+                                    <field name="exclusivity"/>
+                                </group>
+                                <group>
+                                    <field name="option_count"/>
+                                    <field name="option_exercised_count" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Deliverables">
+                                <group>
+                                    <field name="album_commitment"/>
+                                    <field name="single_commitment"/>
+                                </group>
+                                <group>
+                                    <field name="albums_delivered" readonly="1"/>
+                                    <field name="singles_delivered" readonly="1"/>
+                                </group>
+                                <field name="minimum_commitment" colspan="2"/>
+                            </group>
+                        </page>
+
+                        <page string="Financial Terms" name="financial" groups="label_studio_publishing.group_label_exec,label_studio_publishing.group_royalty_accountant">
+                            <group string="Advance">
+                                <group>
+                                    <field name="advance_amount"/>
+                                    <field name="estimated_value"/>
+                                </group>
+                                <group>
+                                    <field name="recoupable_advance"/>
+                                    <field name="recoup_buckets"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Royalty Terms">
+                                <group>
+                                    <field name="master_royalty_rate"/>
+                                    <field name="sales_price_basis"/>
+                                </group>
+                                <group>
+                                    <field name="reserve_percentage"/>
+                                    <field name="reserve_release_schedule"/>
+                                </group>
+                                <field name="escalation_structure" colspan="2" 
+                                       placeholder='[{"threshold": 100000, "rate": 17.5}, {"threshold": 500000, "rate": 20.0}]'/>
+                            </group>
+                            
+                            <group string="Mechanical Rights" attrs="{'invisible': [('deal_type', 'not in', ['record', '360'])]}">
+                                <group>
+                                    <field name="controlled_comp_rate"/>
+                                    <field name="mechanical_cap_tracks"/>
+                                </group>
+                                <group>
+                                    <field name="cross_collateralize_releases"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Publishing Terms" name="publishing" attrs="{'invisible': [('deal_type', 'not in', ['publishing', '360', 'admin'])]}">
+                            <group>
+                                <group>
+                                    <field name="publishing_admin_fee"/>
+                                    <field name="writer_share_default"/>
+                                </group>
+                                <group>
+                                    <field name="publisher_share_default"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="360 Deal Terms" name="360_terms" attrs="{'invisible': [('deal_type', '!=', '360')]}">
+                            <group>
+                                <group>
+                                    <field name="touring_percentage"/>
+                                    <field name="merchandising_percentage"/>
+                                </group>
+                                <group>
+                                    <field name="sync_percentage"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Advances" name="advances">
+                            <field name="advance_line_ids">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="description"/>
+                                    <field name="amount"/>
+                                    <field name="bucket"/>
+                                    <field name="recoupable"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Documents" name="documents">
+                            <group>
+                                <field name="signature_document_ids" widget="many2many_binary"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Deal Tree View -->
+    <record id="view_label_deal_tree" model="ir.ui.view">
+        <field name="name">label.deal.tree</field>
+        <field name="model">label.deal</field>
+        <field name="arch" type="xml">
+            <tree string="Deals" sample="1">
+                <field name="deal_number"/>
+                <field name="name"/>
+                <field name="party_id"/>
+                <field name="deal_type"/>
+                <field name="status" decoration-success="status == 'active'" 
+                       decoration-info="status in ['signed', 'pending_signature']" 
+                       decoration-muted="status in ['expired', 'terminated']"/>
+                <field name="advance_amount" optional="hide"/>
+                <field name="master_royalty_rate" optional="hide"/>
+                <field name="term_start"/>
+                <field name="term_end"/>
+                <field name="signed_date" optional="hide"/>
+                <field name="recoup_balance" sum="Total Recoup Balance" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="label_entity_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Deal Search View -->
+    <record id="view_label_deal_search" model="ir.ui.view">
+        <field name="name">label.deal.search</field>
+        <field name="model">label.deal</field>
+        <field name="arch" type="xml">
+            <search string="Search Deals">
+                <field name="name"/>
+                <field name="deal_number"/>
+                <field name="party_id"/>
+                <field name="deal_type"/>
+                <separator/>
+                <filter string="Active Deals" name="active_deals" domain="[('status', '=', 'active')]"/>
+                <filter string="Signed Deals" name="signed_deals" domain="[('status', 'in', ['signed', 'active'])]"/>
+                <filter string="Draft Deals" name="draft_deals" domain="[('status', '=', 'draft')]"/>
+                <separator/>
+                <filter string="Record Deals" name="record_deals" domain="[('deal_type', '=', 'record')]"/>
+                <filter string="Publishing Deals" name="publishing_deals" domain="[('deal_type', '=', 'publishing')]"/>
+                <filter string="360 Deals" name="360_deals" domain="[('deal_type', '=', '360')]"/>
+                <separator/>
+                <filter string="Unrecouped" name="unrecouped" domain="[('recoup_balance', '>', 0)]"/>
+                <filter string="Recouped" name="recouped" domain="[('recoup_balance', '<=', 0)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Deal Type" name="group_type" context="{'group_by': 'deal_type'}"/>
+                    <filter string="Artist/Writer" name="group_party" context="{'group_by': 'party_id'}"/>
+                    <filter string="Label Entity" name="group_entity" context="{'group_by': 'label_entity_id'}"/>
+                    <filter string="Signed Date" name="group_signed_date" context="{'group_by': 'signed_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Deal Action -->
+    <record id="action_label_deal" model="ir.actions.act_window">
+        <field name="name">Deals</field>
+        <field name="res_model">label.deal</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active_deals': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first deal!
+            </p>
+            <p>
+                Manage recording, publishing, and 360 deals with comprehensive terms
+                including advances, royalty rates, and recoupment structures.
+            </p>
+        </field>
+    </record>
+
+    <!-- Deal Advance Views -->
+    <record id="view_label_deal_advance_form" model="ir.ui.view">
+        <field name="name">label.deal.advance.form</field>
+        <field name="model">label.deal.advance</field>
+        <field name="arch" type="xml">
+            <form string="Deal Advance">
+                <header>
+                    <button name="action_approve" type="object" string="Approve" 
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_pay" type="object" string="Pay" 
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'approved')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,paid"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="deal_id" options="{'no_create': True}"/>
+                            <field name="description"/>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="bucket"/>
+                            <field name="recoupable"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="account_move_id" readonly="1" attrs="{'invisible': [('account_move_id', '=', False)]}"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_label_deal_advance_tree" model="ir.ui.view">
+        <field name="name">label.deal.advance.tree</field>
+        <field name="model">label.deal.advance</field>
+        <field name="arch" type="xml">
+            <tree string="Deal Advances">
+                <field name="date"/>
+                <field name="deal_id"/>
+                <field name="description"/>
+                <field name="amount" sum="Total Advances"/>
+                <field name="bucket"/>
+                <field name="recoupable"/>
+                <field name="state" decoration-success="state == 'paid'" 
+                       decoration-info="state == 'approved'" 
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_label_deal_advance" model="ir.actions.act_window">
+        <field name="name">Deal Advances</field>
+        <field name="res_model">label.deal.advance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No advances yet!
+            </p>
+            <p>
+                Track advances paid to artists and their recoupment status.
+            </p>
+        </field>
+    </record>
+
+</odoo>

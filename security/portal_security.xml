@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Portal User Groups -->
+    <record id="group_portal_artist" model="res.groups">
+        <field name="name">Portal Artist</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="implied_ids" eval="[(4, ref('portal.group_portal'))]"/>
+        <field name="comment">Artists can access their royalty statements, catalog, and deal information through the portal.</field>
+    </record>
+
+    <record id="group_portal_writer" model="res.groups">
+        <field name="name">Portal Writer</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="implied_ids" eval="[(4, ref('portal.group_portal'))]"/>
+        <field name="comment">Writers can access their royalty statements, works, and publishing information through the portal.</field>
+    </record>
+
+    <record id="group_portal_studio_client" model="res.groups">
+        <field name="name">Portal Studio Client</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="implied_ids" eval="[(4, ref('portal.group_portal'))]"/>
+        <field name="comment">Studio clients can access their bookings, sessions, and invoices through the portal.</field>
+    </record>
+
+    <!-- Record Rules for Portal Access -->
+
+    <!-- Artist Portal Access Rules -->
+    <record id="rule_royalty_statement_artist_portal" model="ir.rule">
+        <field name="name">Artist Portal: Own Royalty Statements</field>
+        <field name="model_id" ref="model_royalty_statement"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_artist'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_royalty_usage_line_artist_portal" model="ir.rule">
+        <field name="name">Artist Portal: Own Usage Lines</field>
+        <field name="model_id" ref="model_royalty_usage_line"/>
+        <field name="domain_force">['|', 
+                                     ('recording_id.main_artist_ids', 'in', [user.partner_id.id]),
+                                     ('recording_id.featured_artist_ids', 'in', [user.partner_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_portal_artist'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_music_recording_artist_portal" model="ir.rule">
+        <field name="name">Artist Portal: Own Recordings</field>
+        <field name="model_id" ref="model_music_recording"/>
+        <field name="domain_force">['|', 
+                                     ('main_artist_ids', 'in', [user.partner_id.id]),
+                                     ('featured_artist_ids', 'in', [user.partner_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_portal_artist'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_music_release_artist_portal" model="ir.rule">
+        <field name="name">Artist Portal: Own Releases</field>
+        <field name="model_id" ref="model_music_release"/>
+        <field name="domain_force">[('recording_ids.main_artist_ids', 'in', [user.partner_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_portal_artist'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_label_deal_artist_portal" model="ir.rule">
+        <field name="name">Artist Portal: Own Deals</field>
+        <field name="model_id" ref="model_label_deal"/>
+        <field name="domain_force">[('artist_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_artist'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Writer Portal Access Rules -->
+    <record id="rule_royalty_statement_writer_portal" model="ir.rule">
+        <field name="name">Writer Portal: Own Royalty Statements</field>
+        <field name="model_id" ref="model_royalty_statement"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_royalty_usage_line_writer_portal" model="ir.rule">
+        <field name="name">Writer Portal: Own Usage Lines</field>
+        <field name="model_id" ref="model_royalty_usage_line"/>
+        <field name="domain_force">[('work_id.writer_ids', 'in', [user.partner_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_music_work_writer_portal" model="ir.rule">
+        <field name="name">Writer Portal: Own Works</field>
+        <field name="model_id" ref="model_music_work"/>
+        <field name="domain_force">[('writer_ids', 'in', [user.partner_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_publ_split_writer_portal" model="ir.rule">
+        <field name="name">Writer Portal: Own Split Sheets</field>
+        <field name="model_id" ref="model_publ_split"/>
+        <field name="domain_force">[('writer_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>  <!-- Writers can approve splits -->
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_publ_registration_writer_portal" model="ir.rule">
+        <field name="name">Writer Portal: Own Registrations</field>
+        <field name="model_id" ref="model_publ_registration"/>
+        <field name="domain_force">[('work_id.writer_ids', 'in', [user.partner_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_portal_writer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Studio Client Portal Access Rules -->
+    <record id="rule_studio_booking_client_portal" model="ir.rule">
+        <field name="name">Studio Client Portal: Own Bookings</field>
+        <field name="model_id" ref="model_studio_booking"/>
+        <field name="domain_force">[('client_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_studio_client'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>  <!-- Clients can modify their bookings -->
+        <field name="perm_create" eval="True"/> <!-- Clients can create booking requests -->
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_studio_session_client_portal" model="ir.rule">
+        <field name="name">Studio Client Portal: Own Sessions</field>
+        <field name="model_id" ref="model_studio_session"/>
+        <field name="domain_force">[('booking_id.client_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_studio_client'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_studio_room_client_portal" model="ir.rule">
+        <field name="name">Studio Client Portal: Available Rooms</field>
+        <field name="model_id" ref="model_studio_room"/>
+        <field name="domain_force">[('active', '=', True), ('is_public', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_studio_client'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Common Portal Rules - Partners can see their own records -->
+    <record id="rule_res_partner_portal_self" model="ir.rule">
+        <field name="name">Portal: Own Partner Record</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[('id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_artist')), (4, ref('group_portal_writer')), (4, ref('group_portal_studio_client'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>  <!-- Users can update their own profile -->
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Royalty Payment Access for Artists and Writers -->
+    <record id="rule_royalty_payment_portal" model="ir.rule">
+        <field name="name">Portal: Own Royalty Payments</field>
+        <field name="model_id" ref="model_royalty_payment"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_portal_artist')), (4, ref('group_portal_writer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Access Control Lists (ACLs) -->
+
+    <!-- Artist Portal ACLs -->
+    <record id="access_royalty_statement_portal_artist" model="ir.model.access">
+        <field name="name">Artist Portal: Royalty Statement</field>
+        <field name="model_id" ref="model_royalty_statement"/>
+        <field name="group_id" ref="group_portal_artist"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_royalty_usage_line_portal_artist" model="ir.model.access">
+        <field name="name">Artist Portal: Royalty Usage Line</field>
+        <field name="model_id" ref="model_royalty_usage_line"/>
+        <field name="group_id" ref="group_portal_artist"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_music_recording_portal_artist" model="ir.model.access">
+        <field name="name">Artist Portal: Music Recording</field>
+        <field name="model_id" ref="model_music_recording"/>
+        <field name="group_id" ref="group_portal_artist"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_music_release_portal_artist" model="ir.model.access">
+        <field name="name">Artist Portal: Music Release</field>
+        <field name="model_id" ref="model_music_release"/>
+        <field name="group_id" ref="group_portal_artist"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_label_deal_portal_artist" model="ir.model.access">
+        <field name="name">Artist Portal: Label Deal</field>
+        <field name="model_id" ref="model_label_deal"/>
+        <field name="group_id" ref="group_portal_artist"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_royalty_payment_portal_artist" model="ir.model.access">
+        <field name="name">Artist Portal: Royalty Payment</field>
+        <field name="model_id" ref="model_royalty_payment"/>
+        <field name="group_id" ref="group_portal_artist"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Writer Portal ACLs -->
+    <record id="access_royalty_statement_portal_writer" model="ir.model.access">
+        <field name="name">Writer Portal: Royalty Statement</field>
+        <field name="model_id" ref="model_royalty_statement"/>
+        <field name="group_id" ref="group_portal_writer"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_royalty_usage_line_portal_writer" model="ir.model.access">
+        <field name="name">Writer Portal: Royalty Usage Line</field>
+        <field name="model_id" ref="model_royalty_usage_line"/>
+        <field name="group_id" ref="group_portal_writer"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_music_work_portal_writer" model="ir.model.access">
+        <field name="name">Writer Portal: Music Work</field>
+        <field name="model_id" ref="model_music_work"/>
+        <field name="group_id" ref="group_portal_writer"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_publ_split_portal_writer" model="ir.model.access">
+        <field name="name">Writer Portal: Publishing Split</field>
+        <field name="model_id" ref="model_publ_split"/>
+        <field name="group_id" ref="group_portal_writer"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_publ_registration_portal_writer" model="ir.model.access">
+        <field name="name">Writer Portal: Publishing Registration</field>
+        <field name="model_id" ref="model_publ_registration"/>
+        <field name="group_id" ref="group_portal_writer"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_royalty_payment_portal_writer" model="ir.model.access">
+        <field name="name">Writer Portal: Royalty Payment</field>
+        <field name="model_id" ref="model_royalty_payment"/>
+        <field name="group_id" ref="group_portal_writer"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Studio Client Portal ACLs -->
+    <record id="access_studio_booking_portal_client" model="ir.model.access">
+        <field name="name">Studio Client Portal: Studio Booking</field>
+        <field name="model_id" ref="model_studio_booking"/>
+        <field name="group_id" ref="group_portal_studio_client"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_studio_session_portal_client" model="ir.model.access">
+        <field name="name">Studio Client Portal: Studio Session</field>
+        <field name="model_id" ref="model_studio_session"/>
+        <field name="group_id" ref="group_portal_studio_client"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_studio_room_portal_client" model="ir.model.access">
+        <field name="name">Studio Client Portal: Studio Room</field>
+        <field name="model_id" ref="model_studio_room"/>
+        <field name="group_id" ref="group_portal_studio_client"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_studio_equipment_portal_client" model="ir.model.access">
+        <field name="name">Studio Client Portal: Studio Equipment</field>
+        <field name="model_id" ref="model_studio_equipment"/>
+        <field name="group_id" ref="group_portal_studio_client"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Common Portal ACLs -->
+    <record id="access_res_partner_portal_all" model="ir.model.access">
+        <field name="name">Portal: Partner</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="group_id" ref="portal.group_portal"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_res_company_portal_all" model="ir.model.access">
+        <field name="name">Portal: Company</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="group_id" ref="portal.group_portal"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_res_currency_portal_all" model="ir.model.access">
+        <field name="name">Portal: Currency</field>
+        <field name="model_id" ref="base.model_res_currency"/>
+        <field name="group_id" ref="portal.group_portal"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+</odoo>

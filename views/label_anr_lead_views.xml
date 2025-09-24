@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- A&R Lead Form View -->
+    <record id="view_label_anr_lead_form" model="ir.ui.view">
+        <field name="name">label.anr.lead.form</field>
+        <field name="model">label.anr.lead</field>
+        <field name="arch" type="xml">
+            <form string="A&R Lead">
+                <header>
+                    <button name="action_convert_to_deal" type="object" string="Convert to Deal" 
+                            class="btn-primary" attrs="{'invisible': [('deal_id', '!=', False)]}"/>
+                    <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_deal" type="object" 
+                                class="oe_stat_button" icon="fa-handshake-o"
+                                attrs="{'invisible': [('deal_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Deal</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" 
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Lead Name..."/>
+                        </h1>
+                        <h2>
+                            <field name="artist_name" placeholder="Artist/Band Name..."/>
+                        </h2>
+                    </div>
+
+                    <group>
+                        <group name="basic_info">
+                            <field name="contact_id"/>
+                            <field name="lead_type"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="genre_ids" widget="many2many_tags"/>
+                        </group>
+                        <group name="tracking">
+                            <field name="source_id"/>
+                            <field name="medium_id"/>
+                            <field name="campaign_id"/>
+                            <field name="deal_probability"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Contact Information" name="contact">
+                            <group>
+                                <group>
+                                    <field name="email" widget="email"/>
+                                    <field name="phone" widget="phone"/>
+                                    <field name="website" widget="url"/>
+                                </group>
+                                <group>
+                                    <field name="country_id"/>
+                                    <field name="state_id"/>
+                                    <field name="city"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Social Media" name="social">
+                            <group>
+                                <group>
+                                    <field name="spotify_url" widget="url"/>
+                                    <field name="apple_music_url" widget="url"/>
+                                    <field name="youtube_url" widget="url"/>
+                                </group>
+                                <group>
+                                    <field name="instagram_url" widget="url"/>
+                                    <field name="tiktok_url" widget="url"/>
+                                </group>
+                            </group>
+                            <group name="analytics">
+                                <group>
+                                    <field name="monthly_listeners_spotify"/>
+                                    <field name="total_streams"/>
+                                </group>
+                                <group>
+                                    <field name="social_media_followers"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Deal Potential" name="deal_potential">
+                            <group>
+                                <group>
+                                    <field name="estimated_deal_value"/>
+                                    <field name="estimated_advance"/>
+                                </group>
+                                <group>
+                                    <field name="converted_date" readonly="1"/>
+                                    <field name="deal_id" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Content &amp; Materials" name="content">
+                            <group>
+                                <field name="demo_links" placeholder="Demo links, one per line..."/>
+                                <field name="epk_document_ids" widget="many2many_binary"/>
+                            </group>
+                        </page>
+
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes about this lead..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- A&R Lead Tree View -->
+    <record id="view_label_anr_lead_tree" model="ir.ui.view">
+        <field name="name">label.anr.lead.tree</field>
+        <field name="model">label.anr.lead</field>
+        <field name="arch" type="xml">
+            <tree string="A&R Leads" sample="1">
+                <field name="name"/>
+                <field name="artist_name"/>
+                <field name="lead_type"/>
+                <field name="stage_id"/>
+                <field name="priority" widget="priority"/>
+                <field name="source_id"/>
+                <field name="deal_probability" widget="progressbar"/>
+                <field name="estimated_deal_value" optional="hide"/>
+                <field name="monthly_listeners_spotify" optional="hide"/>
+                <field name="create_date"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- A&R Lead Kanban View -->
+    <record id="view_label_anr_lead_kanban" model="ir.ui.view">
+        <field name="name">label.anr.lead.kanban</field>
+        <field name="model">label.anr.lead</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" class="o_kanban_small_column" sample="1">
+                <field name="stage_id"/>
+                <field name="name"/>
+                <field name="artist_name"/>
+                <field name="lead_type"/>
+                <field name="priority"/>
+                <field name="deal_probability"/>
+                <field name="estimated_deal_value"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.priority.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="o_dropdown_kanban dropdown">
+                                <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown" data-display="static" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                    <span class="fa fa-ellipsis-v"/>
+                                </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <a role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                                    <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="artist_name"/>
+                                        </strong>
+                                        <br/>
+                                        <span class="o_kanban_record_subtitle text-muted">
+                                            <field name="lead_type"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_record_top_right">
+                                        <field name="priority" widget="priority" readonly="1"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="name"/>
+                                    <t t-if="record.deal_probability.raw_value">
+                                        <div class="o_kanban_record_bottom">
+                                            <progressbar field="deal_probability" title="Deal Probability"/>
+                                        </div>
+                                    </t>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <t t-if="record.estimated_deal_value.raw_value">
+                                            <i class="fa fa-money" title="Estimated Deal Value"/>
+                                            <field name="estimated_deal_value"/>
+                                        </t>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- A&R Lead Search View -->
+    <record id="view_label_anr_lead_search" model="ir.ui.view">
+        <field name="name">label.anr.lead.search</field>
+        <field name="model">label.anr.lead</field>
+        <field name="arch" type="xml">
+            <search string="Search A&R Leads">
+                <field name="name"/>
+                <field name="artist_name"/>
+                <field name="contact_id"/>
+                <field name="source_id"/>
+                <field name="genre_ids"/>
+                <separator/>
+                <filter string="My Leads" name="my_leads" domain="[('create_uid', '=', uid)]"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="High Priority" name="high_priority" domain="[('priority', '=', '3')]"/>
+                <filter string="Artists" name="artists" domain="[('lead_type', '=', 'artist')]"/>
+                <filter string="Writers" name="writers" domain="[('lead_type', '=', 'writer')]"/>
+                <separator/>
+                <filter string="Converted" name="converted" domain="[('deal_id', '!=', False)]"/>
+                <filter string="Not Converted" name="not_converted" domain="[('deal_id', '=', False)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Stage" name="group_stage" context="{'group_by': 'stage_id'}"/>
+                    <filter string="Lead Type" name="group_type" context="{'group_by': 'lead_type'}"/>
+                    <filter string="Source" name="group_source" context="{'group_by': 'source_id'}"/>
+                    <filter string="Priority" name="group_priority" context="{'group_by': 'priority'}"/>
+                    <filter string="Creation Date" name="group_create_date" context="{'group_by': 'create_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- A&R Lead Action -->
+    <record id="action_label_anr_lead" model="ir.actions.act_window">
+        <field name="name">A&R Leads</field>
+        <field name="res_model">label.anr.lead</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first A&R lead!
+            </p>
+            <p>
+                Track potential artists, writers, and producers through your A&R pipeline.
+                Capture leads from various sources and convert them to deals when ready.
+            </p>
+        </field>
+    </record>
+
+    <!-- A&R Stage Views -->
+    <record id="view_label_anr_stage_form" model="ir.ui.view">
+        <field name="name">label.anr.stage.form</field>
+        <field name="model">label.anr.stage</field>
+        <field name="arch" type="xml">
+            <form string="A&R Pipeline Stage">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="fold"/>
+                            <field name="is_won"/>
+                            <field name="is_lost"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Description of this stage..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_label_anr_stage_tree" model="ir.ui.view">
+        <field name="name">label.anr.stage.tree</field>
+        <field name="model">label.anr.stage</field>
+        <field name="arch" type="xml">
+            <tree string="A&R Pipeline Stages" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="lead_count"/>
+                <field name="fold"/>
+                <field name="is_won"/>
+                <field name="is_lost"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_label_anr_stage" model="ir.actions.act_window">
+        <field name="name">A&R Pipeline Stages</field>
+        <field name="res_model">label.anr.stage</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

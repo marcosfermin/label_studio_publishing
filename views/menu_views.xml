@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main Application Menu -->
+    <menuitem id="menu_label_studio_publishing_main" 
+              name="Label Studio Publishing"
+              sequence="10"
+              web_icon="label_studio_publishing,static/description/icon.png"/>
+
+    <!-- Music Label Section -->
+    <menuitem id="menu_music_label" 
+              name="Music Label"
+              parent="menu_label_studio_publishing_main"
+              sequence="10"/>
+
+    <!-- A&R Submenu -->
+    <menuitem id="menu_anr" 
+              name="A&R"
+              parent="menu_music_label"
+              sequence="10"/>
+    
+    <menuitem id="menu_anr_leads" 
+              name="Leads"
+              parent="menu_anr"
+              action="action_label_anr_lead"
+              sequence="10"/>
+              
+    <menuitem id="menu_anr_stages" 
+              name="Pipeline Stages"
+              parent="menu_anr"
+              action="action_label_anr_stage"
+              sequence="20"/>
+
+    <!-- Deals Submenu -->
+    <menuitem id="menu_deals" 
+              name="Deals & Contracts"
+              parent="menu_music_label"
+              sequence="20"/>
+              
+    <menuitem id="menu_label_deals" 
+              name="Deals"
+              parent="menu_deals"
+              action="action_label_deal"
+              sequence="10"/>
+              
+    <menuitem id="menu_deal_advances" 
+              name="Advances"
+              parent="menu_deals"
+              action="action_label_deal_advance"
+              sequence="20"/>
+
+    <!-- Catalog Submenu -->
+    <menuitem id="menu_catalog" 
+              name="Catalog"
+              parent="menu_music_label"
+              sequence="30"/>
+              
+    <menuitem id="menu_music_works" 
+              name="Works"
+              parent="menu_catalog"
+              action="action_music_work"
+              sequence="10"/>
+              
+    <menuitem id="menu_music_recordings" 
+              name="Recordings"
+              parent="menu_catalog"
+              action="action_music_recording"
+              sequence="20"/>
+              
+    <menuitem id="menu_music_releases" 
+              name="Releases"
+              parent="menu_catalog"
+              action="action_music_release"
+              sequence="30"/>
+              
+    <menuitem id="menu_music_rights" 
+              name="Rights"
+              parent="menu_catalog"
+              action="action_music_rights"
+              sequence="40"/>
+
+    <!-- Royalties Section -->
+    <menuitem id="menu_royalties" 
+              name="Royalties"
+              parent="menu_label_studio_publishing_main"
+              sequence="20"/>
+
+    <menuitem id="menu_royalty_usage_lines" 
+              name="Usage Lines"
+              parent="menu_royalties"
+              action="action_royalty_usage_line"
+              sequence="10"/>
+              
+    <menuitem id="menu_royalty_statements" 
+              name="Statements"
+              parent="menu_royalties"
+              action="action_royalty_statement"
+              sequence="20"/>
+              
+    <menuitem id="menu_royalty_payments" 
+              name="Payments"
+              parent="menu_royalties"
+              action="action_royalty_payment"
+              sequence="30"/>
+              
+    <menuitem id="menu_recoup_ledger" 
+              name="Recoupment Ledger"
+              parent="menu_royalties"
+              action="action_royalty_recoup_ledger"
+              sequence="40"/>
+
+    <!-- Studio Section -->
+    <menuitem id="menu_studio" 
+              name="Recording Studio"
+              parent="menu_label_studio_publishing_main"
+              sequence="30"/>
+              
+    <menuitem id="menu_studio_bookings" 
+              name="Bookings"
+              parent="menu_studio"
+              action="action_studio_booking"
+              sequence="10"/>
+              
+    <menuitem id="menu_studio_sessions" 
+              name="Sessions"
+              parent="menu_studio"
+              action="action_studio_session"
+              sequence="20"/>
+              
+    <menuitem id="menu_studio_rooms" 
+              name="Rooms"
+              parent="menu_studio"
+              action="action_studio_room"
+              sequence="30"/>
+              
+    <menuitem id="menu_studio_equipment" 
+              name="Equipment"
+              parent="menu_studio"
+              action="action_studio_equipment"
+              sequence="40"/>
+
+    <!-- Publishing Section -->
+    <menuitem id="menu_publishing" 
+              name="Music Publishing"
+              parent="menu_label_studio_publishing_main"
+              sequence="40"/>
+              
+    <menuitem id="menu_publ_splits" 
+              name="Splits"
+              parent="menu_publishing"
+              action="action_publ_split"
+              sequence="10"/>
+              
+    <menuitem id="menu_publ_registrations" 
+              name="PRO Registrations"
+              parent="menu_publishing"
+              action="action_publ_registration"
+              sequence="20"/>
+              
+    <menuitem id="menu_sync_licenses" 
+              name="Sync Licenses"
+              parent="menu_publishing"
+              action="action_sync_license"
+              sequence="30"/>
+
+    <!-- Reports Section -->
+    <menuitem id="menu_reports" 
+              name="Reports"
+              parent="menu_label_studio_publishing_main"
+              sequence="50"/>
+
+    <!-- Configuration Section -->
+    <menuitem id="menu_config" 
+              name="Configuration"
+              parent="menu_label_studio_publishing_main"
+              sequence="60"/>
+              
+    <menuitem id="menu_music_genres" 
+              name="Genres"
+              parent="menu_config"
+              action="action_music_genre"
+              sequence="10"/>
+              
+    <menuitem id="menu_dist_partners" 
+              name="Distribution Partners"
+              parent="menu_config"
+              action="action_dist_partner"
+              sequence="20"/>
+              
+    <menuitem id="menu_config_settings" 
+              name="Settings"
+              parent="menu_config"
+              action="action_label_studio_config_settings"
+              sequence="30"/>
+
+</odoo>

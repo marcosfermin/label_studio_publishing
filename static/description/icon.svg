@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="128" height="128" fill="#2C3E50" rx="16"/>
+    
+    <!-- Music Note -->
+    <circle cx="35" cy="95" r="8" fill="#E74C3C"/>
+    <ellipse cx="35" cy="95" rx="12" ry="6" fill="none" stroke="#E74C3C" stroke-width="2"/>
+    <line x1="43" y1="95" x2="43" y2="45" stroke="#E74C3C" stroke-width="3"/>
+    <path d="M43 45 Q53 40 63 45" stroke="#E74C3C" stroke-width="3" fill="none"/>
+    
+    <!-- Microphone -->
+    <rect x="68" y="40" width="12" height="25" rx="6" fill="#3498DB"/>
+    <rect x="70" y="65" width="8" height="15" fill="#3498DB"/>
+    <line x1="74" y1="80" x2="74" y2="90" stroke="#3498DB" stroke-width="2"/>
+    <line x1="68" y1="90" x2="80" y2="90" stroke="#3498DB" stroke-width="2"/>
+    
+    <!-- Dollar Sign -->
+    <text x="95" y="85" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#F39C12">$</text>
+    
+    <!-- Connecting Lines -->
+    <line x1="43" y1="75" x2="68" y2="60" stroke="#ECF0F1" stroke-width="1" opacity="0.5"/>
+    <line x1="80" y1="75" x2="95" y2="75" stroke="#ECF0F1" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Bottom text indication -->
+    <text x="64" y="115" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#BDC3C7">LSP</text>
+</svg>

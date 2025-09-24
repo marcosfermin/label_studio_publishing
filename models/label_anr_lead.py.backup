@@ -1,0 +1,217 @@
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
+
+class LabelAnrLead(models.Model):
+    _name = 'label.anr.lead'
+    _description = 'A&R Lead'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'create_date desc'
+
+    name = fields.Char(string='Lead Name', required=True, tracking=True)
+    artist_name = fields.Char(string='Artist/Band Name', required=True, tracking=True)
+    contact_id = fields.Many2one('res.partner', string='Contact', tracking=True)
+    
+    # Classification
+    genre_ids = fields.Many2many('music.genre', string='Genres')
+    lead_type = fields.Selection([
+        ('artist', 'Recording Artist'),
+        ('writer', 'Songwriter'),
+        ('producer', 'Producer'),
+        ('band', 'Band'),
+        ('other', 'Other')
+    ], string='Lead Type', default='artist', required=True, tracking=True)
+
+    # Pipeline Management
+    stage_id = fields.Many2one('label.anr.stage', string='Stage', 
+                              default=lambda self: self._default_stage_id(),
+                              group_expand='_read_group_stage_ids', tracking=True)
+    priority = fields.Selection([
+        ('0', 'Low'),
+        ('1', 'Normal'),
+        ('2', 'High'),
+        ('3', 'Very High')
+    ], string='Priority', default='1')
+    
+    # Source Tracking
+    source_id = fields.Many2one('utm.source', string='Source')
+    medium_id = fields.Many2one('utm.medium', string='Medium')
+    campaign_id = fields.Many2one('utm.campaign', string='Campaign')
+    
+    # Contact Information
+    email = fields.Char(string='Email')
+    phone = fields.Char(string='Phone')
+    website = fields.Char(string='Website')
+    
+    # Social Media
+    spotify_url = fields.Char(string='Spotify URL')
+    apple_music_url = fields.Char(string='Apple Music URL')
+    youtube_url = fields.Char(string='YouTube URL')
+    instagram_url = fields.Char(string='Instagram URL')
+    tiktok_url = fields.Char(string='TikTok URL')
+    
+    # Content & Materials
+    demo_links = fields.Text(string='Demo Links')
+    epk_document_ids = fields.Many2many('documents.document', 
+                                       relation='anr_lead_epk_rel',
+                                       string='EPK Documents')
+    notes = fields.Html(string='Notes')
+    
+    # Deal Potential
+    estimated_deal_value = fields.Monetary(string='Estimated Deal Value')
+    estimated_advance = fields.Monetary(string='Estimated Advance')
+    deal_probability = fields.Float(string='Deal Probability (%)', default=0.0)
+    
+    # Location
+    country_id = fields.Many2one('res.country', string='Country')
+    state_id = fields.Many2one('res.country.state', string='State')
+    city = fields.Char(string='City')
+    
+    # Analytics
+    monthly_listeners_spotify = fields.Integer(string='Spotify Monthly Listeners')
+    total_streams = fields.Integer(string='Total Streams')
+    social_media_followers = fields.Integer(string='Social Media Followers')
+    
+    # Conversion
+    deal_id = fields.Many2one('label.deal', string='Converted to Deal', readonly=True)
+    converted_date = fields.Datetime(string='Converted Date', readonly=True)
+    
+    # Status
+    active = fields.Boolean(string='Active', default=True)
+    lost_reason = fields.Text(string='Lost Reason')
+    
+    def _default_stage_id(self):
+        """Default to first stage"""
+        return self.env['label.anr.stage'].search([('sequence', '=', 1)], limit=1)
+
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        """Make stages available in kanban regardless of whether they have records"""
+        return self.env['label.anr.stage'].search([])
+
+    def action_convert_to_deal(self):
+        """Convert lead to deal"""
+        if self.deal_id:
+            raise ValidationError(_('This lead has already been converted to a deal.'))
+        
+        # Create partner if not exists
+        if not self.contact_id:
+            partner_vals = {
+                'name': self.artist_name,
+                'email': self.email,
+                'phone': self.phone,
+                'website': self.website,
+                'is_artist': self.lead_type == 'artist',
+                'is_writer': self.lead_type == 'writer',
+                'is_producer': self.lead_type == 'producer',
+                'stage_name': self.artist_name,
+                'country_id': self.country_id.id,
+                'state_id': self.state_id.id,
+                'city': self.city,
+                'spotify_artist_id': self._extract_spotify_id(self.spotify_url),
+                'apple_music_artist_id': self._extract_apple_music_id(self.apple_music_url),
+                'youtube_channel_id': self._extract_youtube_id(self.youtube_url),
+                'instagram_handle': self._extract_instagram_handle(self.instagram_url),
+                'tiktok_handle': self._extract_tiktok_handle(self.tiktok_url),
+            }
+            partner = self.env['res.partner'].create(partner_vals)
+            self.contact_id = partner.id
+
+        # Create deal
+        deal_vals = {
+            'name': f"Deal - {self.artist_name}",
+            'party_id': self.contact_id.id,
+            'deal_type': 'record' if self.lead_type == 'artist' else 'publishing',
+            'estimated_value': self.estimated_deal_value,
+            'advance_amount': self.estimated_advance,
+            'source_lead_id': self.id,
+        }
+        
+        deal = self.env['label.deal'].create(deal_vals)
+        
+        # Update lead
+        self.write({
+            'deal_id': deal.id,
+            'converted_date': fields.Datetime.now(),
+        })
+        
+        return {
+            'name': _('Deal'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'label.deal',
+            'res_id': deal.id,
+            'view_mode': 'form',
+        }
+
+    def _extract_spotify_id(self, url):
+        """Extract Spotify artist ID from URL"""
+        if not url:
+            return False
+        # Simplified extraction - in real implementation, use proper regex
+        if 'spotify.com/artist/' in url:
+            return url.split('spotify.com/artist/')[-1].split('?')[0]
+        return False
+
+    def _extract_apple_music_id(self, url):
+        """Extract Apple Music artist ID from URL"""
+        if not url:
+            return False
+        if 'music.apple.com' in url and '/artist/' in url:
+            return url.split('/artist/')[-1].split('?')[0]
+        return False
+
+    def _extract_youtube_id(self, url):
+        """Extract YouTube channel ID from URL"""
+        if not url:
+            return False
+        if 'youtube.com/channel/' in url:
+            return url.split('youtube.com/channel/')[-1].split('?')[0]
+        elif 'youtube.com/c/' in url:
+            return url.split('youtube.com/c/')[-1].split('?')[0]
+        return False
+
+    def _extract_instagram_handle(self, url):
+        """Extract Instagram handle from URL"""
+        if not url:
+            return False
+        if 'instagram.com/' in url:
+            handle = url.split('instagram.com/')[-1].split('?')[0].strip('/')
+            return f"@{handle}" if not handle.startswith('@') else handle
+        return False
+
+    def _extract_tiktok_handle(self, url):
+        """Extract TikTok handle from URL"""
+        if not url:
+            return False
+        if 'tiktok.com/@' in url:
+            return url.split('tiktok.com/@')[-1].split('?')[0]
+        return False
+
+
+class LabelAnrStage(models.Model):
+    _name = 'label.anr.stage'
+    _description = 'A&R Pipeline Stage'
+    _order = 'sequence'
+
+    name = fields.Char(string='Stage Name', required=True, translate=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+    fold = fields.Boolean(string='Folded in Kanban')
+    description = fields.Text(string='Description', translate=True)
+    
+    # Pipeline Logic
+    is_won = fields.Boolean(string='Is Won Stage', 
+                           help='Leads in this stage are considered won (converted)')
+    is_lost = fields.Boolean(string='Is Lost Stage',
+                            help='Leads in this stage are considered lost')
+    
+    # Automation
+    auto_assign_user_id = fields.Many2one('res.users', string='Auto Assign to User')
+    
+    lead_count = fields.Integer(string='Lead Count', compute='_compute_lead_count')
+
+    @api.depends()
+    def _compute_lead_count(self):
+        for stage in self:
+            stage.lead_count = self.env['label.anr.lead'].search_count([('stage_id', '=', stage.id)])

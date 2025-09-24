@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Usage Line Form View -->
+    <record id="view_royalty_usage_line_form" model="ir.ui.view">
+        <field name="name">royalty.usage.line.form</field>
+        <field name="model">royalty.usage.line</field>
+        <field name="arch" type="xml">
+            <form string="Royalty Usage Line">
+                <header>
+                    <button name="action_auto_match" type="object" string="Auto Match" 
+                            class="btn-primary" attrs="{'invisible': [('matched_state', '=', 'locked')]}"/>
+                    <button name="action_manual_match_recording" type="object" string="Match Recording" 
+                            class="btn-secondary"/>
+                    <button name="action_manual_match_work" type="object" string="Match Work" 
+                            class="btn-secondary"/>
+                    <button name="action_lock_match" type="object" string="Lock Match" 
+                            class="btn-warning" attrs="{'invisible': [('matched_state', '=', 'locked')]}"/>
+                    <button name="action_reset_match" type="object" string="Reset Match" 
+                            class="btn-light" attrs="{'invisible': [('matched_state', '=', 'locked')]}"/>
+                    <field name="matched_state" widget="statusbar" 
+                           statusbar_colors='{"unmatched":"red","auto_matched":"blue","manually_matched":"green","locked":"gray"}'/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_recording" type="object" 
+                                class="oe_stat_button" icon="fa-music"
+                                attrs="{'invisible': [('recording_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Recording</span>
+                            </div>
+                        </button>
+                        <button name="action_view_work" type="object" 
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                attrs="{'invisible': [('work_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Work</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="alert alert-success" role="alert" attrs="{'invisible': [('matched_state', '!=', 'auto_matched')]}">
+                        <strong>Auto Matched!</strong> This usage was automatically matched with confidence score: 
+                        <field name="confidence_score" widget="percentage"/>
+                    </div>
+
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('matched_state', '!=', 'unmatched')]}">
+                        <strong>Unmatched!</strong> This usage line needs to be matched to catalog items.
+                    </div>
+
+                    <group>
+                        <group name="source_info">
+                            <field name="source_type"/>
+                            <field name="source_id"/>
+                            <field name="source_reference"/>
+                            <field name="import_batch_id" readonly="1"/>
+                        </group>
+                        <group name="period_info">
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                            <field name="reporting_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Content Identification" name="content">
+                            <group string="Reported Information">
+                                <group>
+                                    <field name="track_name"/>
+                                    <field name="artist_name"/>
+                                    <field name="album_name"/>
+                                    <field name="label_name"/>
+                                </group>
+                                <group>
+                                    <field name="isrc"/>
+                                    <field name="iswc"/>
+                                    <field name="upc"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Matched Catalog Items">
+                                <group>
+                                    <field name="recording_id"/>
+                                    <field name="work_id"/>
+                                </group>
+                                <group>
+                                    <field name="release_id"/>
+                                    <field name="confidence_score" widget="percentage"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Usage &amp; Financial" name="usage">
+                            <group string="Usage Details">
+                                <group>
+                                    <field name="usage_type"/>
+                                    <field name="units"/>
+                                    <field name="rate_per_unit"/>
+                                </group>
+                                <group>
+                                    <field name="territory_code"/>
+                                    <field name="territory_name"/>
+                                    <field name="service"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Financial">
+                                <group>
+                                    <field name="currency_id"/>
+                                    <field name="gross_amount"/>
+                                    <field name="fees"/>
+                                    <field name="net_amount"/>
+                                </group>
+                                <group>
+                                    <field name="exchange_rate" groups="base.group_multi_currency"/>
+                                    <field name="net_amount_company_currency"/>
+                                    <field name="company_currency_id" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Processing" name="processing">
+                            <group>
+                                <group>
+                                    <field name="processed" readonly="1"/>
+                                    <field name="processed_date" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="statement_id" readonly="1"/>
+                                    <field name="payment_id" readonly="1"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="notes" placeholder="Processing notes..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Usage Line Tree View -->
+    <record id="view_royalty_usage_line_tree" model="ir.ui.view">
+        <field name="name">royalty.usage.line.tree</field>
+        <field name="model">royalty.usage.line</field>
+        <field name="arch" type="xml">
+            <tree string="Usage Lines" sample="1" editable="bottom" 
+                  decoration-success="matched_state in ['auto_matched', 'manually_matched']"
+                  decoration-info="matched_state == 'locked'"
+                  decoration-warning="matched_state == 'unmatched'">
+                <field name="period_start"/>
+                <field name="track_name"/>
+                <field name="artist_name"/>
+                <field name="isrc" optional="hide"/>
+                <field name="usage_type"/>
+                <field name="service"/>
+                <field name="territory_code" optional="hide"/>
+                <field name="units"/>
+                <field name="net_amount" sum="Total Revenue"/>
+                <field name="matched_state" 
+                       decoration-success="matched_state in ['auto_matched', 'manually_matched']"
+                       decoration-info="matched_state == 'locked'"
+                       decoration-warning="matched_state == 'unmatched'"/>
+                <field name="confidence_score" widget="percentage" optional="hide"/>
+                <field name="recording_id" optional="hide"/>
+                <field name="work_id" optional="hide"/>
+                <field name="processed" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="source_type" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Usage Line Search View -->
+    <record id="view_royalty_usage_line_search" model="ir.ui.view">
+        <field name="name">royalty.usage.line.search</field>
+        <field name="model">royalty.usage.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Usage Lines">
+                <field name="track_name"/>
+                <field name="artist_name"/>
+                <field name="isrc"/>
+                <field name="iswc"/>
+                <field name="source_id"/>
+                <field name="service"/>
+                <separator/>
+                <filter string="Unmatched" name="unmatched" domain="[('matched_state', '=', 'unmatched')]"/>
+                <filter string="Auto Matched" name="auto_matched" domain="[('matched_state', '=', 'auto_matched')]"/>
+                <filter string="Manually Matched" name="manually_matched" domain="[('matched_state', '=', 'manually_matched')]"/>
+                <filter string="Locked" name="locked" domain="[('matched_state', '=', 'locked')]"/>
+                <separator/>
+                <filter string="Unprocessed" name="unprocessed" domain="[('processed', '=', False)]"/>
+                <filter string="Processed" name="processed" domain="[('processed', '=', True)]"/>
+                <separator/>
+                <filter string="Streams" name="streams" domain="[('usage_type', '=', 'stream')]"/>
+                <filter string="Downloads" name="downloads" domain="[('usage_type', '=', 'download')]"/>
+                <filter string="Physical" name="physical" domain="[('usage_type', '=', 'physical')]"/>
+                <separator/>
+                <filter string="This Month" name="this_month" 
+                        domain="[('period_start', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-01')),
+                                ('period_start', '&lt;', (context_today().replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%Y-%m-%d'))]"/>
+                <filter string="Last Month" name="last_month" 
+                        domain="[('period_start', '&gt;=', (context_today().replace(day=1) - datetime.timedelta(days=1)).replace(day=1).strftime('%Y-%m-%d')),
+                                ('period_start', '&lt;', context_today().replace(day=1).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Source Type" name="group_source_type" context="{'group_by': 'source_type'}"/>
+                    <filter string="Source" name="group_source" context="{'group_by': 'source_id'}"/>
+                    <filter string="Service/DSP" name="group_service" context="{'group_by': 'service'}"/>
+                    <filter string="Usage Type" name="group_usage_type" context="{'group_by': 'usage_type'}"/>
+                    <filter string="Territory" name="group_territory" context="{'group_by': 'territory_code'}"/>
+                    <filter string="Matched State" name="group_matched_state" context="{'group_by': 'matched_state'}"/>
+                    <filter string="Period" name="group_period" context="{'group_by': 'period_start'}"/>
+                    <filter string="Artist" name="group_artist" context="{'group_by': 'artist_name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Usage Line Kanban View -->
+    <record id="view_royalty_usage_line_kanban" model="ir.ui.view">
+        <field name="name">royalty.usage.line.kanban</field>
+        <field name="model">royalty.usage.line</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="matched_state" sample="1">
+                <field name="track_name"/>
+                <field name="artist_name"/>
+                <field name="net_amount"/>
+                <field name="currency_id"/>
+                <field name="matched_state"/>
+                <field name="confidence_score"/>
+                <field name="usage_type"/>
+                <field name="service"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click" 
+                             t-attf-class="#{record.matched_state.raw_value == 'unmatched' ? 'border-warning' : ''}
+                                           #{record.matched_state.raw_value == 'auto_matched' ? 'border-info' : ''}
+                                           #{record.matched_state.raw_value == 'manually_matched' ? 'border-success' : ''}
+                                           #{record.matched_state.raw_value == 'locked' ? 'border-secondary' : ''}">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="track_name"/>
+                                        </strong>
+                                        <br/>
+                                        <span class="text-muted">
+                                            by <field name="artist_name"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong><field name="usage_type"/></strong>
+                                            <br/>
+                                            <span class="text-muted"><field name="service"/></span>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <strong>
+                                                <field name="net_amount" widget="monetary"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <t t-if="record.confidence_score.raw_value">
+                                        <div class="mt-2">
+                                            <small>Confidence: </small>
+                                            <field name="confidence_score" widget="percentage"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Usage Line Action -->
+    <record id="action_royalty_usage_line" model="ir.actions.act_window">
+        <field name="name">Usage Lines</field>
+        <field name="res_model">royalty.usage.line</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{'search_default_unprocessed': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No usage lines yet!
+            </p>
+            <p>
+                Import distributor and PRO statements to see usage data that will be matched 
+                to your catalog and processed for royalty calculations.
+            </p>
+        </field>
+    </record>
+
+</odoo>

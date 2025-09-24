@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Royalty Statement Import Wizard Views -->
+    <record id="view_royalty_statement_import_form" model="ir.ui.view">
+        <field name="name">royalty.statement.import.form</field>
+        <field name="model">royalty.statement.import</field>
+        <field name="arch" type="xml">
+            <form string="Import Royalty Statement">
+                <header>
+                    <button name="action_preview_file" type="object" string="Preview File" 
+                           class="btn-secondary" invisible="state != 'draft'"/>
+                    <button name="action_configure_mapping" type="object" string="Configure Mapping" 
+                           class="btn-primary" invisible="state not in ('preview', 'completed')"/>
+                    <button name="action_import_statements" type="object" string="Import Statements" 
+                           class="btn-primary" invisible="state != 'preview' or not column_mapping"/>
+                    <button name="action_view_imported_lines" type="object" string="View Imported Lines" 
+                           class="btn-success" invisible="state != 'completed' or not import_batch_id"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,preview,importing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Import Royalty Statements</h1>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div invisible="state != 'importing'">
+                        <div class="o_progressbar">
+                            <div class="o_progress" role="progressbar" 
+                                 t-attf-aria-valuenow="#{progress}" 
+                                 t-attf-style="width: #{progress}%;">
+                                <span t-esc="progress" t-options="{'widget': 'percentage'}"/>%
+                            </div>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="File Upload">
+                            <field name="file_data" filename="filename"/>
+                            <field name="filename" invisible="1"/>
+                            <field name="source_type"/>
+                            <field name="source_id" domain="[('supplier_rank', '>', 0)]"/>
+                            <field name="template_id" domain="[('source_type', '=', source_type)]" 
+                                   invisible="not source_type"/>
+                        </group>
+                        
+                        <group string="Period Information">
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                            <field name="reporting_date"/>
+                            <field name="currency_id"/>
+                            <field name="exchange_rate" invisible="currency_id == %(base.main_company)d.currency_id"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="File Format">
+                            <field name="file_delimiter"/>
+                            <field name="has_header"/>
+                            <field name="encoding"/>
+                        </group>
+                        
+                        <group string="Processing Options">
+                            <field name="dry_run"/>
+                            <field name="auto_match"/>
+                            <field name="skip_duplicates"/>
+                            <field name="batch_size"/>
+                        </group>
+                    </group>
+
+                    <!-- File Preview -->
+                    <notebook invisible="state == 'draft'">
+                        <page string="File Preview" invisible="not preview_data">
+                            <field name="preview_data" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Column Mapping" invisible="not column_mapping">
+                            <field name="column_mapping" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Import Results" invisible="state != 'completed'">
+                            <group>
+                                <group string="Statistics">
+                                    <field name="total_lines" readonly="1"/>
+                                    <field name="imported_lines" readonly="1"/>
+                                    <field name="matched_lines" readonly="1"/>
+                                    <field name="error_lines" readonly="1"/>
+                                </group>
+                                <group string="Batch Info">
+                                    <field name="import_batch_id" readonly="1"/>
+                                    <field name="progress" widget="progressbar" readonly="1"/>
+                                </group>
+                            </group>
+                            <separator string="Import Log"/>
+                            <field name="import_log" widget="text" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Import Mapping Wizard Views -->
+    <record id="view_royalty_import_mapping_wizard_form" model="ir.ui.view">
+        <field name="name">royalty.import.mapping.wizard.form</field>
+        <field name="model">royalty.import.mapping.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Configure Column Mapping">
+                <header>
+                    <button name="action_apply_mapping" type="object" string="Apply Mapping" 
+                           class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Configure Column Mapping</h1>
+                        <p>Map the columns from your file to the appropriate fields in the system.</p>
+                    </div>
+
+                    <group>
+                        <group string="Template Options">
+                            <field name="save_as_template"/>
+                            <field name="template_name" invisible="not save_as_template" 
+                                   required="save_as_template"/>
+                        </group>
+                    </group>
+
+                    <separator string="Column Mappings"/>
+                    <field name="mapping_line_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="target_field_label"/>
+                            <field name="target_field" invisible="1"/>
+                            <field name="source_column" widget="selection"/>
+                            <field name="required"/>
+                            <field name="file_columns_json" invisible="1"/>
+                        </tree>
+                    </field>
+
+                    <!-- Preview Data -->
+                    <notebook invisible="not preview_data">
+                        <page string="File Preview">
+                            <field name="preview_data" widget="text" readonly="1"/>
+                        </page>
+                    </notebook>
+
+                    <field name="import_wizard_id" invisible="1"/>
+                    <field name="file_columns" invisible="1"/>
+                    <field name="column_mapping" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Import Template Views -->
+    <record id="view_royalty_import_template_tree" model="ir.ui.view">
+        <field name="name">royalty.import.template.tree</field>
+        <field name="model">royalty.import.template</field>
+        <field name="arch" type="xml">
+            <tree string="Import Templates">
+                <field name="name"/>
+                <field name="source_type"/>
+                <field name="is_default"/>
+                <field name="delimiter"/>
+                <field name="has_header"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_royalty_import_template_form" model="ir.ui.view">
+        <field name="name">royalty.import.template.form</field>
+        <field name="model">royalty.import.template</field>
+        <field name="arch" type="xml">
+            <form string="Import Template">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Template Name..."/></h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="source_type"/>
+                            <field name="is_default"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="delimiter"/>
+                            <field name="has_header"/>
+                        </group>
+                    </group>
+
+                    <separator string="Column Mapping"/>
+                    <field name="column_mapping" widget="text" 
+                           placeholder='{"track_name": "Song Title", "artist_name": "Artist", ...}'/>
+
+                    <separator string="Notes"/>
+                    <field name="notes" placeholder="Template usage notes..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Export Wizard Views -->
+    <record id="view_royalty_export_wizard_form" model="ir.ui.view">
+        <field name="name">royalty.export.wizard.form</field>
+        <field name="model">royalty.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Royalty Data">
+                <header>
+                    <button name="action_export_data" type="object" string="Export Data" 
+                           class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Export Royalty Data</h1>
+                    </div>
+
+                    <group>
+                        <group string="Export Configuration">
+                            <field name="export_type"/>
+                            <field name="file_format"/>
+                        </group>
+                        <group string="Date Range">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Filters">
+                            <field name="partner_ids" widget="many2many_tags" 
+                                   domain="[('supplier_rank', '>', 0)]"/>
+                            <field name="source_type"/>
+                        </group>
+                        <group string="Options">
+                            <field name="include_matched"/>
+                            <field name="include_unmatched"/>
+                            <field name="group_by_recording" invisible="export_type != 'usage_lines'"/>
+                        </group>
+                    </group>
+
+                    <!-- Export Results -->
+                    <group invisible="not export_data">
+                        <group string="Download">
+                            <field name="export_filename" readonly="1"/>
+                            <field name="export_data" filename="export_filename" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Menu Actions -->
+    <record id="action_royalty_statement_import" model="ir.actions.act_window">
+        <field name="name">Import Royalty Statements</field>
+        <field name="res_model">royalty.statement.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_royalty_statement_import_form"/>
+    </record>
+
+    <record id="action_royalty_export_wizard" model="ir.actions.act_window">
+        <field name="name">Export Royalty Data</field>
+        <field name="res_model">royalty.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_royalty_export_wizard_form"/>
+    </record>
+
+    <record id="action_royalty_import_template" model="ir.actions.act_window">
+        <field name="name">Import Templates</field>
+        <field name="res_model">royalty.import.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_royalty_import_template_tree"/>
+    </record>
+
+    <!-- Add to existing menu -->
+    <record id="menu_royalty_import_statements" model="ir.ui.menu">
+        <field name="name">Import Statements</field>
+        <field name="parent_id" ref="menu_royalties"/>
+        <field name="action" ref="action_royalty_statement_import"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="menu_royalty_export_data" model="ir.ui.menu">
+        <field name="name">Export Data</field>
+        <field name="parent_id" ref="menu_royalties"/>
+        <field name="action" ref="action_royalty_export_wizard"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="menu_royalty_import_templates" model="ir.ui.menu">
+        <field name="name">Import Templates</field>
+        <field name="parent_id" ref="menu_royalties_configuration"/>
+        <field name="action" ref="action_royalty_import_template"/>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Quick Action for Import from Usage Lines -->
+    <record id="action_import_from_usage_lines" model="ir.actions.act_window">
+        <field name="name">Import New Statement</field>
+        <field name="res_model">royalty.statement.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_royalty_statement_import_form"/>
+    </record>
+
+</odoo>

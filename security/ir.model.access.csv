@@ -1,0 +1,60 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+
+# Label Executive - Full Access
+access_partner_label_exec,res.partner label exec,base.model_res_partner,group_label_exec,1,1,1,1
+access_anr_lead_label_exec,label.anr.lead label exec,model_label_anr_lead,group_label_exec,1,1,1,1
+access_anr_stage_label_exec,label.anr.stage label exec,model_label_anr_stage,group_label_exec,1,1,1,1
+access_deal_label_exec,label.deal label exec,model_label_deal,group_label_exec,1,1,1,1
+access_deal_advance_label_exec,label.deal.advance label exec,model_label_deal_advance,group_label_exec,1,1,1,1
+access_music_genre_label_exec,music.genre label exec,model_music_genre,group_label_exec,1,1,1,1
+access_music_work_label_exec,music.work label exec,model_music_work,group_label_exec,1,1,1,1
+access_music_recording_label_exec,music.recording label exec,model_music_recording,group_label_exec,1,1,1,1
+access_music_release_label_exec,music.release label exec,model_music_release,group_label_exec,1,1,1,1
+access_music_rights_label_exec,music.rights label exec,model_music_rights,group_label_exec,1,1,1,1
+access_royalty_usage_line_label_exec,royalty.usage.line label exec,model_royalty_usage_line,group_label_exec,1,1,1,1
+access_royalty_recoup_ledger_label_exec,royalty.recoup.ledger label exec,model_royalty_recoup_ledger,group_label_exec,1,1,1,1
+access_publ_split_label_exec,publ.split label exec,model_publ_split,group_label_exec,1,1,1,1
+
+# A&R Manager
+access_partner_anr_manager,res.partner anr manager,base.model_res_partner,group_anr_manager,1,1,1,0
+access_anr_lead_anr_manager,label.anr.lead anr manager,model_label_anr_lead,group_anr_manager,1,1,1,1
+access_anr_stage_anr_manager,label.anr.stage anr manager,model_label_anr_stage,group_anr_manager,1,1,1,0
+access_deal_anr_manager,label.deal anr manager,model_label_deal,group_anr_manager,1,1,1,0
+access_music_genre_anr_manager,music.genre anr manager,model_music_genre,group_anr_manager,1,0,0,0
+access_music_work_anr_manager,music.work anr manager,model_music_work,group_anr_manager,1,1,1,0
+access_music_recording_anr_manager,music.recording anr manager,model_music_recording,group_anr_manager,1,1,1,0
+access_music_release_anr_manager,music.release anr manager,model_music_release,group_anr_manager,1,1,1,0
+
+# Royalty Accountant
+access_partner_royalty_accountant,res.partner royalty accountant,base.model_res_partner,group_royalty_accountant,1,1,0,0
+access_royalty_usage_line_royalty_accountant,royalty.usage.line royalty accountant,model_royalty_usage_line,group_royalty_accountant,1,1,1,1
+access_royalty_recoup_ledger_royalty_accountant,royalty.recoup.ledger royalty accountant,model_royalty_recoup_ledger,group_royalty_accountant,1,1,1,0
+access_music_work_royalty_accountant,music.work royalty accountant,model_music_work,group_royalty_accountant,1,0,0,0
+access_music_recording_royalty_accountant,music.recording royalty accountant,model_music_recording,group_royalty_accountant,1,0,0,0
+access_deal_royalty_accountant,label.deal royalty accountant,model_label_deal,group_royalty_accountant,1,0,0,0
+
+# Studio Manager
+access_partner_studio_manager,res.partner studio manager,base.model_res_partner,group_studio_manager,1,1,1,0
+
+# Studio Staff
+access_partner_studio_staff,res.partner studio staff,base.model_res_partner,group_studio_staff,1,0,0,0
+
+# Publishing Manager
+access_partner_publishing_manager,res.partner publishing manager,base.model_res_partner,group_publishing_manager,1,1,1,0
+access_music_work_publishing_manager,music.work publishing manager,model_music_work,group_publishing_manager,1,1,1,1
+access_publ_split_publishing_manager,publ.split publishing manager,model_publ_split,group_publishing_manager,1,1,1,1
+access_music_genre_publishing_manager,music.genre publishing manager,model_music_genre,group_publishing_manager,1,0,0,0
+
+# Portal Users - Artists
+access_partner_artist_portal,res.partner artist portal,base.model_res_partner,group_artist_portal,1,1,0,0
+access_deal_artist_portal,label.deal artist portal,model_label_deal,group_artist_portal,1,0,0,0
+access_music_recording_artist_portal,music.recording artist portal,model_music_recording,group_artist_portal,1,0,0,0
+access_music_release_artist_portal,music.release artist portal,model_music_release,group_artist_portal,1,0,0,0
+
+# Portal Users - Writers
+access_partner_writer_portal,res.partner writer portal,base.model_res_partner,group_writer_portal,1,1,0,0
+access_music_work_writer_portal,music.work writer portal,model_music_work,group_writer_portal,1,0,0,0
+access_publ_split_writer_portal,publ.split writer portal,model_publ_split,group_writer_portal,1,0,0,0
+
+# Public Access (for website forms, etc.)
+access_anr_lead_public,label.anr.lead public,model_label_anr_lead,base.group_public,0,0,1,0

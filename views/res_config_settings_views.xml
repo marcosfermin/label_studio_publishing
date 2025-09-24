@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.label_studio_publishing</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="20"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Label Studio Publishing" string="Label Studio Publishing" data-key="label_studio_publishing">
+                    
+                    <h2>Royalty Settings</h2>
+                    
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Statutory Mechanical Rates"/>
+                                <div class="text-muted">
+                                    Current statutory mechanical royalty rates per track
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="us_mechanical_rate" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="us_mechanical_rate" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="ca_mechanical_rate" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="ca_mechanical_rate" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Reserve Management"/>
+                                <div class="text-muted">
+                                    Default settings for royalty reserves
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="default_reserve_percentage" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="default_reserve_percentage" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="default_reserve_release_months" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="default_reserve_release_months" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="enable_negative_statements"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="enable_negative_statements"/>
+                                <div class="text-muted">
+                                    Allow artists to have negative balances on royalty statements
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="enable_cross_collateralization"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="enable_cross_collateralization"/>
+                                <div class="text-muted">
+                                    Enable cross-collateralization between releases by default
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Matching Engine</h2>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Matching Thresholds"/>
+                                <div class="text-muted">
+                                    Configure automatic matching behavior
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="matching_confidence_threshold" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="matching_confidence_threshold" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="fuzzy_matching_threshold" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="fuzzy_matching_threshold" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Import Processing"/>
+                                <div class="text-muted">
+                                    Batch processing settings for large imports
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="max_import_batch_size" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="max_import_batch_size" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="minimum_payment_threshold" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="minimum_payment_threshold" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Studio Settings</h2>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Booking Defaults"/>
+                                <div class="text-muted">
+                                    Default settings for studio bookings
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="studio_default_deposit_percentage" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="studio_default_deposit_percentage" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="studio_cancellation_hours" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="studio_cancellation_hours" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Notifications</h2>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="enable_email_notifications"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="enable_email_notifications"/>
+                                <div class="text-muted">
+                                    Send email notifications for statements, bookings, etc.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="enable_sms_notifications"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="enable_sms_notifications"/>
+                                <div class="text-muted">
+                                    Send SMS notifications (requires Twilio configuration)
+                                </div>
+                                <div class="content-group mt16" attrs="{'invisible': [('enable_sms_notifications', '=', False)]}">
+                                    <div class="row">
+                                        <label for="twilio_account_sid" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="twilio_account_sid" class="col-9" password="False"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="twilio_auth_token" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="twilio_auth_token" class="col-9" password="True"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="twilio_from_number" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="twilio_from_number" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>DDEX &amp; Distribution</h2>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="DDEX Configuration"/>
+                                <div class="text-muted">
+                                    Settings for DDEX ERN package generation
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="ddex_party_id" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="ddex_party_id" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="ddex_message_thread_id" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="ddex_message_thread_id" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Document Organization"/>
+                                <div class="text-muted">
+                                    How to organize uploaded documents
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="default_document_folder_structure" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="default_document_folder_structure" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Accounting Integration</h2>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Default Accounts"/>
+                                <div class="text-muted">
+                                    Configure default accounts for automatic entries
+                                </div>
+                                <div class="content-group mt16">
+                                    <div class="row">
+                                        <label for="royalty_payable_account_id" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="royalty_payable_account_id" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="advance_payable_account_id" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="advance_payable_account_id" class="col-9"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="reserve_liability_account_id" class="col-3 col-lg-3 o_light_label"/>
+                                        <field name="reserve_liability_account_id" class="col-9"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Configuration Settings Action -->
+    <record id="action_label_studio_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'label_studio_publishing'}</field>
+    </record>
+
+</odoo>
